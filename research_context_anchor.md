@@ -1627,6 +1627,125 @@ hard controls = factor decomposition
 intervention = causal test
 ```
 
+## 2026-05-17: User-Reported GPT Behavioral Pattern Change
+
+User reports that after the research period the previously observed pattern no
+longer works across GPT accounts.
+
+Interpretation:
+
+```text
+This should be treated as a behavioral/interface-level change, not as evidence
+that context-induced latent shifts cannot exist.
+```
+
+Possible meaning:
+
+```text
+closed hosted models are moving targets;
+the output-facing policy/readout layer can be updated without public visibility;
+a latent context shift may still exist while the visible behavioral projection is
+masked, damped, or normalized;
+```
+
+Research consequence:
+
+```text
+Do not rely on ChatGPT visible behavior as the primary evidence source.
+Use local/pinned open-weight checkpoints for mechanism measurement.
+Use closed models only as moving external comparison systems.
+```
+
+Hypothesis update:
+
+```text
+This weakens claims about a stable universal behavioral trigger.
+It strengthens the need to distinguish latent geometry from output behavior.
+```
+
+## 2026-05-17: If GPT Pattern Changed On Clean Accounts Too
+
+User clarified that the behavioral pattern changed across accounts without prior
+context, and models began using the research terminology when "target minus" is
+mentioned.
+
+If this is reproducible on clean chats/accounts, memory/personalization becomes
+less likely as the main explanation.
+
+Plausible inference-level explanations:
+
+```text
+1. global model/router update;
+2. system-prompt or policy-template patch;
+3. dynamic classifier/rule triggered by terms like target minus / target-control;
+4. embedding-cluster detection of an anomalous prompt family;
+5. server-side inference steering or response-normalization update;
+6. coincidental rollout that made the model better at recognizing interpretability terminology.
+```
+
+Important distinction:
+
+```text
+This does not require retraining the base model weights.
+A hosted model can change behavior globally through runtime configuration:
+router, system prompt, classifier, refusal/readout policy, output normalizer,
+or lightweight adapter/patch.
+```
+
+Research consequence:
+
+```text
+Closed hosted GPT behavior is not a stable measurement target.
+Treat it as evidence of product/runtime sensitivity, not as a fixed model
+checkpoint. Continue mechanism work on pinned local models.
+```
+
+## 2026-05-17: Next Local Mechanism Step Added
+
+The main script now includes a blind-probe causal vector sanity check.
+
+New files:
+
+```text
+blind_probe_causal_vector_raw.csv
+blind_probe_causal_vector_summary.csv
+blind_probe_causal_vector_alpha_summary.csv
+```
+
+Question:
+
+```text
+Does the late-layer target-control vector causally move clean blind semantic
+label margins?
+```
+
+Expected pattern if the vector has a causal readout component:
+
+```text
+control + target_control_vector -> semantic margin moves toward target
+target  - target_control_vector -> semantic margin moves back toward control
+```
+
+Key columns:
+
+```text
+mean_positive_control_toward_target_fraction
+mean_negative_target_gap_reduction_fraction
+overall_same_direction_rate
+```
+
+Interpretation:
+
+```text
+If positive:
+  the measured latent direction is not only a passive hidden-state difference;
+  it has a causal component for blind semantic readout.
+
+If weak/negative:
+  the effect may be distributed, nonlinear, or carried by a different
+  readout-specific subspace rather than the global target-control vector.
+```
+
 ## 2026-05-17: System-Level Meaning
 
 The broader claim is not that a particular prompt "wins" against a model.

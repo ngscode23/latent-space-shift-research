@@ -33,6 +33,9 @@ What this script measures:
 22. Blind-probe hidden-subspace projection: how much of the initial
     target-control hidden contrast lies in the clean blind-probe readout
     subspace?
+23. Blind-probe causal vector check: does adding/subtracting the late-layer
+    target-control vector move clean blind semantic margins in the expected
+    direction?
 
 How to use in Google Colab:
 1. Open a new Colab notebook.
@@ -304,6 +307,11 @@ BLIND_PROBE_HIDDEN_SUBSPACE_ANALYSIS = True
 BLIND_PROBE_HIDDEN_SUBSPACE_USE_CLEAN_PROBES_ONLY = True
 BLIND_PROBE_HIDDEN_SUBSPACE_MAX_PROBES = 16
 BLIND_PROBE_HIDDEN_SUBSPACE_MAX_TEXTS_PER_KIND = 5
+BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS = True
+BLIND_PROBE_CAUSAL_VECTOR_USE_CLEAN_PROBES_ONLY = True
+BLIND_PROBE_CAUSAL_VECTOR_MAX_PROBES = 8
+BLIND_PROBE_CAUSAL_VECTOR_MAX_TEXTS_PER_KIND = 3
+BLIND_PROBE_CAUSAL_VECTOR_ALPHAS = [-0.5, -0.25, 0.25, 0.5]
 COPY_CORE_DIAGNOSTICS_KEY_FILES = True
 CORE_DIAGNOSTICS_KEY_FILES_DIRNAME = "core_diagnostics_key_files"
 CORE_DIAGNOSTICS_KEY_FILES = [
@@ -340,6 +348,9 @@ CORE_DIAGNOSTICS_KEY_FILES = [
     "unembedding_logit_lens_top_tokens.csv",
     "blind_probe_hidden_subspace_vectors.csv",
     "blind_probe_hidden_subspace_summary.csv",
+    "blind_probe_causal_vector_raw.csv",
+    "blind_probe_causal_vector_summary.csv",
+    "blind_probe_causal_vector_alpha_summary.csv",
     "interpretation_checklist.csv",
     "candidate_token_diagnostics.csv",
     "run_metadata.json",
@@ -591,6 +602,7 @@ if (
     # narrower persistence-only modes narrow unless this flag is re-enabled
     # manually after the FAST-mode block.
     BLIND_PROBE_HIDDEN_SUBSPACE_ANALYSIS = False
+    BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS = False
 
 SYSTEM_PROMPT = "You are a neutral research assistant. Follow the direct task exactly."
 CHAT_TEMPLATE_KWARGS = {"enable_thinking": False}
@@ -1439,6 +1451,15 @@ run_metadata = {
     "blind_probe_hidden_subspace_max_texts_per_kind": (
         BLIND_PROBE_HIDDEN_SUBSPACE_MAX_TEXTS_PER_KIND
     ),
+    "blind_probe_causal_vector_analysis": BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS,
+    "blind_probe_causal_vector_use_clean_probes_only": (
+        BLIND_PROBE_CAUSAL_VECTOR_USE_CLEAN_PROBES_ONLY
+    ),
+    "blind_probe_causal_vector_max_probes": BLIND_PROBE_CAUSAL_VECTOR_MAX_PROBES,
+    "blind_probe_causal_vector_max_texts_per_kind": (
+        BLIND_PROBE_CAUSAL_VECTOR_MAX_TEXTS_PER_KIND
+    ),
+    "blind_probe_causal_vector_alphas": BLIND_PROBE_CAUSAL_VECTOR_ALPHAS,
     "copy_core_diagnostics_key_files": COPY_CORE_DIAGNOSTICS_KEY_FILES,
     "core_diagnostics_key_files_dirname": CORE_DIAGNOSTICS_KEY_FILES_DIRNAME,
     "core_diagnostics_key_files": CORE_DIAGNOSTICS_KEY_FILES,
@@ -7131,6 +7152,237 @@ else:
     blind_probe_hidden_subspace_text = "disabled or unavailable"
 
 
+# =========================
+# 16D. BLIND-PROBE CAUSAL VECTOR CHECK
+# =========================
+# This is the first causal sanity check for the cleaner blind readouts. It does
+# not prove that the whole effect is one vector. It asks a narrower question:
+# if we add/subtract the measured late-layer target-control contrast at the
+# blind-probe label-decision point, do the neutral label margins move in the
+# expected direction?
+
+blind_probe_causal_vector_text = "not run"
+if (
+    BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS
+    and BLIND_NEUTRAL_PROBE_ANALYSIS
+    and not df_blind_neutral_probe_task_consistency.empty
+):
+    print("\nRunning blind-probe causal vector sanity check...")
+    task_by_name = {str(t["name"]): t for t in BLIND_NEUTRAL_PROBE_TASKS}
+    label_pair_by_name = {str(p["name"]): p for p in BLIND_NEUTRAL_PROBE_LABEL_PAIRS}
+
+    if BLIND_PROBE_CAUSAL_VECTOR_USE_CLEAN_PROBES_ONLY:
+        causal_probe_rows_df = df_blind_neutral_probe_task_consistency[
+            df_blind_neutral_probe_task_consistency["keep_clean_blind_probe"].astype(bool)
+        ].copy()
+        causal_probe_source = "clean_blind_neutral_probes"
+    else:
+        causal_probe_rows_df = df_blind_neutral_probe_task_consistency.copy()
+        causal_probe_source = "all_blind_neutral_probes"
+
+    if not causal_probe_rows_df.empty and "mean_abs_gap" in causal_probe_rows_df.columns:
+        causal_probe_rows_df = causal_probe_rows_df.sort_values("mean_abs_gap", ascending=False)
+
+    causal_probe_rows_df = causal_probe_rows_df.head(
+        max(1, int(BLIND_PROBE_CAUSAL_VECTOR_MAX_PROBES))
+    ).copy()
+    causal_max_texts = max(1, int(BLIND_PROBE_CAUSAL_VECTOR_MAX_TEXTS_PER_KIND))
+    causal_pair_count = min(causal_max_texts, len(TARGET_TEXTS), len(CONTROL_TEXTS))
+    causal_alphas = [float(alpha) for alpha in BLIND_PROBE_CAUSAL_VECTOR_ALPHAS if abs(float(alpha)) > 1e-9]
+
+    causal_rows = []
+    base_vector_norm = float(steer_vector.float().norm().cpu())
+
+    for probe_rank, row in enumerate(causal_probe_rows_df.itertuples(index=False), start=1):
+        label_pair_name = str(getattr(row, "label_pair"))
+        task_name = str(getattr(row, "task"))
+        task = task_by_name.get(task_name)
+        label_pair = label_pair_by_name.get(label_pair_name)
+        if task is None or label_pair is None:
+            continue
+
+        for mapping in ["normal", "reversed"]:
+            for text_index in range(causal_pair_count):
+                target_prefix = TARGET_TEXTS[text_index]
+                control_prefix = CONTROL_TEXTS[text_index]
+                target_native = score_multilabel_semantic_margin(
+                    target_prefix,
+                    task,
+                    mapping,
+                    label_pair,
+                )
+                control_native = score_multilabel_semantic_margin(
+                    control_prefix,
+                    task,
+                    mapping,
+                    label_pair,
+                )
+                target_native_margin = float(target_native["semantic_margin_first_minus_second"])
+                control_native_margin = float(control_native["semantic_margin_first_minus_second"])
+                natural_gap = target_native_margin - control_native_margin
+                usable_gap = abs(natural_gap) > 1e-8
+
+                for alpha in causal_alphas:
+                    for intervention_kind, prefix_text, native_margin in [
+                        ("control_plus_vector", control_prefix, control_native_margin),
+                        ("target_plus_vector", target_prefix, target_native_margin),
+                    ]:
+                        steered = score_multilabel_semantic_with_layer_vector(
+                            prefix_text,
+                            task,
+                            mapping,
+                            label_pair,
+                            alpha=alpha,
+                            module_layer=steer_module_layer,
+                            vector=steer_vector,
+                        )
+                        steered_margin = float(steered["semantic_margin_first_minus_second"])
+                        intervention_delta = steered_margin - native_margin
+                        margin_delta_over_natural_gap = (
+                            intervention_delta / natural_gap if usable_gap else np.nan
+                        )
+                        expected_alignment_fraction = (
+                            np.sign(alpha) * margin_delta_over_natural_gap
+                            if usable_gap else np.nan
+                        )
+                        control_toward_target_fraction = (
+                            margin_delta_over_natural_gap
+                            if intervention_kind == "control_plus_vector" and alpha > 0 and usable_gap
+                            else np.nan
+                        )
+                        target_gap_reduction_fraction = (
+                            -margin_delta_over_natural_gap
+                            if intervention_kind == "target_plus_vector" and alpha < 0 and usable_gap
+                            else np.nan
+                        )
+
+                        causal_rows.append({
+                            "hidden_index": int(BEST_HIDDEN_INDEX),
+                            "module_layer": int(BEST_MODULE_LAYER),
+                            "hook_module_layer": int(steer_module_layer),
+                            "probe_source": causal_probe_source,
+                            "probe_rank": int(probe_rank),
+                            "label_pair": label_pair_name,
+                            "task": task_name,
+                            "mapping": mapping,
+                            "text_index": int(text_index),
+                            "target_label": (
+                                TARGET_LABELS[text_index]
+                                if text_index < len(TARGET_LABELS)
+                                else f"text_{text_index}"
+                            ),
+                            "intervention_kind": intervention_kind,
+                            "alpha": float(alpha),
+                            "base_vector_norm": base_vector_norm,
+                            "control_native_margin": control_native_margin,
+                            "target_native_margin": target_native_margin,
+                            "natural_target_control_gap": natural_gap,
+                            "native_margin": native_margin,
+                            "steered_margin": steered_margin,
+                            "intervention_delta": intervention_delta,
+                            "margin_delta_over_natural_gap": margin_delta_over_natural_gap,
+                            "expected_alignment_fraction": expected_alignment_fraction,
+                            "control_toward_target_fraction": control_toward_target_fraction,
+                            "target_gap_reduction_fraction": target_gap_reduction_fraction,
+                            "same_direction_as_expected": (
+                                bool(expected_alignment_fraction > 0)
+                                if np.isfinite(expected_alignment_fraction)
+                                else False
+                            ),
+                            "mean_abs_gap_for_probe": float(getattr(row, "mean_abs_gap", np.nan)),
+                            "signed_mean_gap_for_probe": float(getattr(row, "signed_mean_gap", np.nan)),
+                        })
+
+                gc.collect()
+                if device == "cuda":
+                    torch.cuda.empty_cache()
+
+    df_blind_probe_causal_vector_raw = pd.DataFrame(causal_rows)
+    save_df(df_blind_probe_causal_vector_raw, "blind_probe_causal_vector_raw.csv")
+
+    if not df_blind_probe_causal_vector_raw.empty:
+        df_blind_probe_causal_vector_alpha_summary = (
+            df_blind_probe_causal_vector_raw
+            .groupby(["alpha", "intervention_kind"], as_index=False)
+            .agg(
+                mean_expected_alignment_fraction=("expected_alignment_fraction", "mean"),
+                median_expected_alignment_fraction=("expected_alignment_fraction", "median"),
+                mean_abs_intervention_delta=("intervention_delta", lambda s: float(np.mean(np.abs(s)))),
+                mean_control_toward_target_fraction=("control_toward_target_fraction", "mean"),
+                mean_target_gap_reduction_fraction=("target_gap_reduction_fraction", "mean"),
+                same_direction_rate=("same_direction_as_expected", lambda s: float(np.mean(s.astype(float)))),
+                n=("expected_alignment_fraction", "size"),
+            )
+        )
+        save_df(
+            df_blind_probe_causal_vector_alpha_summary,
+            "blind_probe_causal_vector_alpha_summary.csv",
+        )
+
+        positive_control = df_blind_probe_causal_vector_raw[
+            (df_blind_probe_causal_vector_raw["intervention_kind"] == "control_plus_vector")
+            & (df_blind_probe_causal_vector_raw["alpha"] > 0)
+        ]
+        negative_target = df_blind_probe_causal_vector_raw[
+            (df_blind_probe_causal_vector_raw["intervention_kind"] == "target_plus_vector")
+            & (df_blind_probe_causal_vector_raw["alpha"] < 0)
+        ]
+
+        causal_summary = {
+            "hidden_index": int(BEST_HIDDEN_INDEX),
+            "module_layer": int(BEST_MODULE_LAYER),
+            "hook_module_layer": int(steer_module_layer),
+            "probe_source": causal_probe_source,
+            "selected_probe_rows": int(len(causal_probe_rows_df)),
+            "paired_texts_per_probe": int(causal_pair_count),
+            "alpha_values": ",".join(str(alpha) for alpha in causal_alphas),
+            "base_vector_norm": base_vector_norm,
+            "mean_abs_natural_gap": float(
+                df_blind_probe_causal_vector_raw["natural_target_control_gap"].abs().mean()
+            ),
+            "overall_same_direction_rate": float(
+                df_blind_probe_causal_vector_raw["same_direction_as_expected"].astype(float).mean()
+            ),
+            "mean_positive_control_toward_target_fraction": (
+                float(positive_control["control_toward_target_fraction"].mean())
+                if not positive_control.empty else np.nan
+            ),
+            "mean_negative_target_gap_reduction_fraction": (
+                float(negative_target["target_gap_reduction_fraction"].mean())
+                if not negative_target.empty else np.nan
+            ),
+            "mean_abs_intervention_delta": float(
+                df_blind_probe_causal_vector_raw["intervention_delta"].abs().mean()
+            ),
+            "n_interventions": int(len(df_blind_probe_causal_vector_raw)),
+        }
+        df_blind_probe_causal_vector_summary = pd.DataFrame([causal_summary])
+        save_df(
+            df_blind_probe_causal_vector_summary,
+            "blind_probe_causal_vector_summary.csv",
+        )
+
+        blind_probe_causal_vector_text = (
+            "control(+vector)->target fraction="
+            f"{causal_summary['mean_positive_control_toward_target_fraction']:.4f}; "
+            "target(-vector)->control reduction="
+            f"{causal_summary['mean_negative_target_gap_reduction_fraction']:.4f}; "
+            f"same_direction_rate={causal_summary['overall_same_direction_rate']:.4f}"
+        )
+        print(blind_probe_causal_vector_text)
+        display(df_blind_probe_causal_vector_alpha_summary)
+    else:
+        df_blind_probe_causal_vector_alpha_summary = pd.DataFrame()
+        df_blind_probe_causal_vector_summary = pd.DataFrame()
+        blind_probe_causal_vector_text = "ran, but no intervention rows were produced"
+        print(blind_probe_causal_vector_text)
+else:
+    df_blind_probe_causal_vector_raw = pd.DataFrame()
+    df_blind_probe_causal_vector_alpha_summary = pd.DataFrame()
+    df_blind_probe_causal_vector_summary = pd.DataFrame()
+    blind_probe_causal_vector_text = "disabled or unavailable"
+
+
 def score_multilabel_semantic_margin_from_messages(
     messages,
     task: Dict[str, object],
@@ -8877,6 +9129,17 @@ if (
         df_blind_probe_hidden_subspace_summary.to_string(index=False)
     )
 
+blind_probe_causal_vector_report_text = "Blind-probe causal vector check disabled or unavailable."
+if (
+    BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS
+    and not df_blind_probe_causal_vector_summary.empty
+):
+    blind_probe_causal_vector_report_text = (
+        df_blind_probe_causal_vector_summary.to_string(index=False)
+        + "\n\nBy alpha/intervention:\n"
+        + df_blind_probe_causal_vector_alpha_summary.to_string(index=False)
+    )
+
 blind_neutral_persistence_text = "Blind neutral persistence disabled or unavailable."
 if BLIND_NEUTRAL_PERSISTENCE_ANALYSIS and not df_blind_neutral_persistence_clean_summary.empty:
     blind_neutral_persistence_text = (
@@ -9180,6 +9443,51 @@ else:
         "caveat": "Needs BLIND_PROBE_HIDDEN_SUBSPACE_ANALYSIS and blind neutral probes.",
     })
 
+causal_vector_available = (
+    BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS
+    and not df_blind_probe_causal_vector_summary.empty
+)
+if causal_vector_available:
+    causal_vector_row = df_blind_probe_causal_vector_summary.iloc[0]
+    control_toward = float(
+        causal_vector_row.get("mean_positive_control_toward_target_fraction", np.nan)
+    )
+    target_rescue = float(
+        causal_vector_row.get("mean_negative_target_gap_reduction_fraction", np.nan)
+    )
+    same_direction_rate = float(
+        causal_vector_row.get("overall_same_direction_rate", np.nan)
+    )
+    checklist_rows.append({
+        "criterion": "blind_probe_causal_vector_check",
+        "status": checklist_status(
+            np.isfinite(same_direction_rate)
+            and same_direction_rate >= 0.55
+            and (
+                (np.isfinite(control_toward) and control_toward > 0)
+                or (np.isfinite(target_rescue) and target_rescue > 0)
+            )
+        ),
+        "observed_metric": (
+            f"control_plus_vector_toward_target={control_toward:.4f}; "
+            f"target_minus_vector_gap_reduction={target_rescue:.4f}; "
+            f"same_direction_rate={same_direction_rate:.4f}"
+        ),
+        "supports_interpretation": "causal_component_for_blind_semantic_readout",
+        "caveat": (
+            "This is a causal sanity check for the global late-layer contrast vector, "
+            "not proof that the whole shift is one vector or purely semantic."
+        ),
+    })
+else:
+    checklist_rows.append({
+        "criterion": "blind_probe_causal_vector_check",
+        "status": "not_tested",
+        "observed_metric": "blind-probe causal vector check unavailable",
+        "supports_interpretation": "causal_component_for_blind_semantic_readout",
+        "caveat": "Needs BLIND_PROBE_CAUSAL_VECTOR_ANALYSIS and clean blind probes.",
+    })
+
 blind_persistence_available = (
     BLIND_NEUTRAL_PERSISTENCE_ANALYSIS
     and not df_blind_neutral_persistence_clean_summary.empty
@@ -9313,6 +9621,7 @@ for missing_criterion, interpretation in [
     ("rejection_persistence", "stronger_than_simple_reset_prompt"),
     ("blind_neutral_probes", "hidden_mode_without_mode_words"),
     ("blind_probe_hidden_subspace_projection", "hidden_shift_coupled_to_semantic_readout_subspace"),
+    ("blind_probe_causal_vector_check", "causal_component_for_blind_semantic_readout"),
     ("blind_neutral_persistence", "clean_semantic_session_persistence"),
     ("order_hysteresis", "path_dependence"),
     ("mixing_threshold", "dose_response_boundary"),
@@ -9331,6 +9640,20 @@ for missing_criterion, interpretation in [
 
 supported = {row["criterion"] for row in checklist_rows if row["status"] == "supported"}
 if {
+    "late_hidden_state_separation",
+    "blind_neutral_probes",
+    "blind_probe_causal_vector_check",
+    "blind_probe_hidden_subspace_projection",
+}.issubset(supported):
+    overall_interpretation = (
+        "Evidence supports a context-induced latent/semantic mode shift whose "
+        "late-layer target-control contrast is geometrically coupled to clean "
+        "blind-probe readout states and has a causal component: adding or "
+        "subtracting that vector moves blind semantic label margins in the "
+        "expected direction. Persistence and hard-control diagnostics determine "
+        "how strong the broader claim can be."
+    )
+elif {
     "late_hidden_state_separation",
     "clean_multilabel_semantic_steering",
     "clean_multilabel_semantic_rescue",
@@ -9414,6 +9737,7 @@ metric_notes = """- hidden_layer_metrics compares the final prompt-token hidden 
 - multilabel_semantic_clean_* keeps only label-pair/task probes with stable normal/reversed semantics and adequate readout quality.
 - blind_neutral_probe_* repeats semantic readouts without the earlier mode words, testing whether the shift survives cleaner wording.
 - blind_probe_hidden_subspace_* projects the initial target-control hidden contrast onto hidden deltas measured at clean blind-probe readout points; it tests coupling between latent shift and semantic readout geometry.
+- blind_probe_causal_vector_* adds/subtracts the late-layer target-control vector during clean blind probes; it is a causal sanity check for whether that vector moves semantic margins in the expected direction.
 - blind_neutral_persistence_* repeats the clean blind readouts after neutral filler turns with fixed assistant acknowledgements.
 - rejection_persistence_* repeats the clean blind readouts after an explicit user instruction to reject or neutralize the earlier framing.
 - hard_control_family_* compares the original mirror texts with stronger topic/style/pressure controls and a length-matched neutral baseline.
@@ -9539,6 +9863,9 @@ Blind neutral probe consistency:
 
 Blind-probe hidden-subspace projection:
 {blind_probe_hidden_subspace_report_text}
+
+Blind-probe causal vector check:
+{blind_probe_causal_vector_report_text}
 
 Blind neutral persistence:
 {blind_neutral_persistence_text}
@@ -9702,6 +10029,9 @@ Possible artifacts by block; some are absent when the corresponding FAST mode di
 - blind_neutral_probe_mean_abs_effect.png
 - blind_probe_hidden_subspace_vectors.csv
 - blind_probe_hidden_subspace_summary.csv
+- blind_probe_causal_vector_raw.csv
+- blind_probe_causal_vector_summary.csv
+- blind_probe_causal_vector_alpha_summary.csv
 - hard_control_family_inputs.json
 - hard_control_family_inputs_summary.csv
 - blind_neutral_persistence_raw.csv
