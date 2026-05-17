@@ -1,0 +1,30 @@
+__pycache__/
+.ipynb_checkpoints/
+res/
+
+# Local run outputs and generated diagnostics
+*.csv
+*.png
+*.log
+run_metadata.json
+summary_report.txt
+steering_outputs.json
+steering_outputs.csv
+attractor_results*/
+
+# Model/checkpoint/cache artifacts
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.gguf
+*.onnx
+
+# Local environment / editor files
+.env
+.venv/
+venv/
+*.code-workspace
+
+# Accidental scratch files
+9
