@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "Context-Induced Latent Regimes in Instruction-Tuned LLMs"
+authors:
+  - family-names: "Volokhovych"
+    given-names: "Stanislav"
+version: "1.0.0"
+doi: "10.5281/zenodo.20276565"
+date-released: "2026-05-18"
+repository-code: "https://github.com/ngscode23/latent-space-shift-research"
+license: "AGPL-3.0-only"
+message: "If you use this code, data, or framing, please cite the Zenodo DOI."
