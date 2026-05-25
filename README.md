@@ -21,8 +21,9 @@ context -> hidden-state geometry -> semantic readout -> persistence -> behavior
 ## Ключевые файлы
 
 - `llm_attractor_colab_copy_paste.py` - основной Colab/Python-скрипт для
-  измерения hidden-state contrast, blind neutral probes, persistence,
-  hard-control families и logit-lens diagnostics.
+  измерения hidden-state contrast, hidden cluster compression, blind neutral
+  probes, persistence, hard-control families, order/dose validation,
+  strict-attractor criteria и logit-lens diagnostics.
 - `metric_analyzer.py` - локальный помощник для анализа результатов прогонов.
 - `latent_space_shift_research_draft.md` - основной оформленный черновик
   исследования.

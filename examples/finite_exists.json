@@ -1,0 +1,21 @@
+{
+  "query_type": "candidate_attractor",
+  "system_type": "finite",
+  "X": ["a", "b", "c", "d"],
+  "metric": {
+    "type": "discrete",
+    "values": {}
+  },
+  "F": {
+    "type": "total_mapping",
+    "mapping": {
+      "a": "a",
+      "b": "a",
+      "c": "b",
+      "d": "c"
+    }
+  },
+  "A": ["a"],
+  "U": ["a", "b", "c", "d"],
+  "diagnostics": {}
+}

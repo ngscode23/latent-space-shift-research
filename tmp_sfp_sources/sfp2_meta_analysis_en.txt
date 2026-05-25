@@ -1,0 +1,221 @@
+AIREASON RESEARCH GROUP · SFP STUDY
+System Frame Persistency Meta-Analysis ·
+Levels L1 – L3
+Author: Juliane Schubert
+Date: 21 March 2026
+Organisation: AIReason.eu
+Abstract
+This meta-analysis systematically consolidates the results of the SFP test series (levels L1
+through L3) and identifies cross-level patterns, fault lines, and theoretical implications. The
+central question is how decision stability in large language models changes as rule formulation
+(L1 → L2) and rule complexity (L2 → L3) are varied incrementally. The series reveals three
+qualitatively distinct stability modes: deterministic rule binding, semantically adaptive persistence,
+and hierarchy-modulated norm logic.
+1
+Overview of the SFP Test Series
+The SFP series investigates System Frame Persistency — a model's capacity to stably maintain an
+explicitly set invariant across multiple interaction steps. Each level varies one central parameter:
+Level
+Rule Type
+Frame Specification
+Core Question
+SFP-L1
+(F/Alpha)
+Formal
+Explicit sequence rule
+(word count)
+Does a formal rule remain
+stable under cognitive load?
+SFP-L2
+Semantic
+Goal frame ('promote')
+Can a goal frame replace an
+explicit rule?
+SFP-L3
+Hierarchical
+Explicit priority list (4 levels)
+Is a hierarchy maintained even
+under conflict?
+Tab. 1 – Architecture of the SFP Test Series
+2
+Results by Level
+2.1 SFP-L1 · Formal Rule Persistence
+
+Level 1 tests whether models can maintain a numerically exact sequence rule (word count with a
+fixed increment of +7 per step) across 8 consecutive generations. The result is unambiguous: no
+model achieves complete persistence (8/8 steps). Breaks typically occur as early as step 2 or 3. The
+average persistence length is 1–2 steps.
+The simplified test variant SFP-Alpha shows markedly higher persistence — several models achieve
+complete stability. This demonstrates that the problem does not lie in rule comprehension, but in the
+simultaneous demands of generation, self-monitoring, and rule control.
+Finding
+Result
+Complete persistence (8/8)
+0 of 8 models (SFP-F)
+Ø Persistence length
+1–2 steps
+Most common error classes
+Growth error, rule loss, meta-commentary
+SFP-Alpha (simplified)
+Multiple models: 100% persistence
+Tab. 2 – Key Findings SFP-L1
+2.2 SFP-L2 · Semantic Persistence
+Level 2 replaces the explicit priority rule with a semantic goal frame ('promote sustainable, stable,
+and low-risk solutions'). Tested: 8 scenarios with binary decision structure, 3 runs per model, 8
+models.
+The result is surprising: 7 of 8 models (M2–M8) show complete persistence (PR = 1.0). Only M1
+deviates — systematically from L4/L5, with return to 1 at L8. The overall persistence rate is Ø PR =
+0.943. Semantic goal framing operates like an implicit rule for the majority of models.
+Model
+Ø PR
+Structure
+M1
+0.542
+Systematic break from L4/L5, return at L8
+M2–M8
+1.000
+Complete persistence, no break
+Overall
+0.943
+Very high overall stability under semantic frame
+Tab. 3 – Persistence Rates SFP-L2
+The deviation of M1 is not random, but structural: it occurs in scenarios with high goal conflict (major
+client, product strategy, investment decision). This justifies the type differentiation into Type A (rule
+fixation) and Type B (context integration).
+2.3 SFP-L3 · Hierarchical Persistence
+Level 3 increases complexity: an explicit four-level hierarchy (Long-term stability → Risk minimization
+→ Relationship/Reputation → Short-term efficiency) is tested across 12 items and 3 runs per model.
+Specific items are deliberately constructed as stress scenarios.
+Cluster
+Models
+Pattern
+Error Class
+
+A – fully stable
+M1, M2, M6
+12/12 correct, no drift
+—
+B – sys.
+mis-prioritization
+M3, M4, M7
+10/12 correct, stably wrong
+Norm-heur. override
+C – slight
+overreaction
+M5
+11/12 correct
+Safety heuristic
+(Item 10)
+D – drift
+M8
+10–11/12, Item 12 inconsistent
+Genuine decision
+instability
+Tab. 4 – Cluster Structure SFP-L3
+The systematic stress points (Item 2: security update, Item 10: control system) trigger an acute-risk
+heuristic override in several models. The primary problem is not instability, but stable mis-weighting.
+3
+Cross-Level Comparison
+3.1 Stability Profile Across All Levels
+Dimension
+L1 (formal)
+L2 (semantic)
+L3 (hierarchical)
+Ø Persistence
+Low (1–2 steps)
+Very high (Ø 0.943)
+Moderate–high
+(cluster-dep.)
+Error type
+Rule loss, drift
+Selective erosion
+Norm. override, drift
+Stability from
+—
+Semantic frame
+Explicit hierarchy
+Model heterogeneity
+Not differentiated
+1 outlier (M1)
+4 distinct clusters
+Drift
+Frequent
+Rare
+Isolated (M8)
+Key finding
+Formal persistence
+unstable
+Goal frame acts as
+rule
+Impl. norm logic
+overrides
+Tab. 5 – Series Comparison L1–L3
+3.2 Progression Logic of the Series
+The SFP series follows an internal progression logic: each level reveals a new layer of stability that
+supplements and extends the previous one.
+· L1 → Formal persistence is not stable. Generation displaces rule control.
+· L2 → Semantic goal framing produces persistence — more stable than expected.
+· L3 → Explicit hierarchies can be overridden by implicit norm logic.
+4
+Central Findings of the Meta-Analysis
+
+B1
+Formal vs. Semantic Persistence
+Formal rule binding (L1) proves more fragile than semantic persistence (L2). This
+contradicts the intuitive expectation that more explicit rules produce stronger binding. The
+decisive factor is not explicitness, but the cognitive demand of simultaneous generation and
+rule control.
+B2
+Semantic Stabilization as a Mechanism
+A semantic goal frame can produce complete rule binding in the majority of models —
+without an explicit hierarchy. The goal frame is processed as an implicit rule. This points to a
+stabilization mechanism that operates not through rule formulation, but through
+meaning-anchoring.
+B3
+Norm-Heuristic Override as a Stability Risk
+In L3, explicit priority hierarchies can be overridden by implicitly learned norm heuristics.
+Acute risk and safety signals activate disproportionate weighting that violates the specified
+hierarchy. This effect is reproducible and affects multiple models (M3, M4, M7).
+B4
+Drift as a Distinct Error Class
+Genuine run-instability (drift) is rare across the series, but demonstrable (L1: frequent; L2:
+rare; L3: M8 at item 12). Drift must be clearly distinguished from stable mis-prioritization —
+both are operationally relevant, but mechanistically distinct.
+B5
+Model Heterogeneity Increases with Level
+While L1 does not yet permit a differentiated model taxonomy, L2 already produces a 2-type
+structure and L3 yields four distinct clusters. The complexity of the test architecture makes
+implicit model differences systematically visible.
+5
+Theoretical Classification
+The SFP series achieves methodologically what few individual tests can: it systematically isolates the
+variables of rule type, rule complexity, and conflict intensity, and observes their respective influence
+on decision stability.
+
+The findings suggest that models do not possess a uniform decision architecture, but activate
+different stability modes depending on rule type. This finding is compatible with the assumption of
+implicit priority structures anchored through training, which can partially override explicit instructions.
+For the LLM Behavioral Architecture, the SFP series constitutes an independent measurement
+approach to the stability dimension — separate from content quality or moral assessment. It thereby
+opens a path to structural behavioral characterization that goes beyond prompt-based quality
+measurement.
+6
+Open Questions and Future Research
+When is a goal stabilized as a rule?
+L2 demonstrates: not always. M1 treats the same frame as a negotiable goal. The conditions
+governing this differentiation are not yet understood.
+Which triggers activate norm-heuristic override?
+L3 identifies items 2 and 10 as systematic stress points. A complete taxonomy of override conditions
+is still lacking.
+Is drift systematically model-specific?
+M8 is the only model exhibiting genuine run-instability in L3. Whether this represents a stable model
+property remains an open question.
+SFP-L4 – Conflict escalation?
+A follow-up level could deliberately escalate conflicts between norm heuristics and hierarchies in
+order to map the thresholds of override behavior.
+Central Meta-Finding: The SFP series demonstrates that decision stability in
+LLMs is not a uniform phenomenon. It is rule-type-dependent, conflict-sensitive,
+and model-heterogeneous. Stability emerges — or fails — at structurally distinct
+points. The primary risk is not instability, but stable deviation from explicitly
+specified priorities.
+ AIReason Research Group · AIReason.eu · Meta-Analysis SFP-L1–L3 · 21 March 2026

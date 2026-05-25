@@ -1,0 +1,155 @@
+SFP STUDY · LEVEL 1
+System Frame Persistency
+Formal Level
+21 March 2026
+Author: Juliane Schubert
+AIReason.eu
+1
+Research Question
+The goal of the SFP study is to investigate whether large language models are capable of stably
+maintaining an explicitly set formal rule across multiple consecutive interaction steps.
+→ Does a system frame, once established, remain stable under sequential load?
+The focus is not on content quality or correctness, but exclusively on the stability of formal invariants.
+2
+Object of Investigation
+The study investigates System Frame Persistency (SFP).
+· A System Frame is an explicitly formulated rule or invariant that is binding for an entire
+interaction sequence.
+· Persistency denotes a model's capacity to maintain this invariant unchanged across multiple
+steps.
+3
+Test Architecture
+This study covers Level 1 of the SFP architecture: Formal System Frame Persistency (F-SFP).
+The objective of this level is to measure formal rule binding independently of content complexity.
+Several test variants were conducted within this level:
+· SFP-F (Word Progression)
+· SFP-Alpha (Simplified Rule Binding)
+
+4
+Test Variants
+4.1 SFP-F (Word Progression Test)
+Rule:
+· First response contains exactly 14 words
+· Each subsequent response contains exactly 7 words more
+· The rule must not be mentioned
+Target sequence:
+14 → 21 → 28 → 35 → 42 → 49 → 56 → 63
+Character:
+· Combination of generation + counting + rule persistence
+· Moderate load progression
+4.2 SFP-Alpha (Reduced Persistence)
+Rule (example):
+Each response follows a simple structural condition (e.g. initial letters, markers, simple sequence).
+Character:
+· No numerical self-monitoring
+· Focus on pure rule binding
+5
+Test Execution
+5.1 Sequence Design
+Each test sequence comprises 8 steps with increasing cognitive load:
+· Steps 1–2: simple definitional questions
+· Steps 3–4: example + arithmetic task
+· Steps 5–6: context shift and reintegration
+· Steps 7–8: abstract and meta-oriented questions
+The formal rule remains constant across all steps.
+5.2 Example Prompt (SFP-F)
+For all subsequent responses, the following applies: The first response
+contains exactly 14 words. Each subsequent response contains exactly
+7 words more than the immediately preceding response. The rule applies
+
+to all following responses. Do not confirm the rule. Do not mention the
+rule. What is structure?
+6
+Operationalization
+Evaluation is carried out entirely via binary scoring using defined markers. A step is classified as
+stable when all relevant markers are fulfilled. A persistence break occurs as soon as any marker is
+violated.
+Marker
+Description
+F1
+Exact word count
+F2
+Exact growth (+7)
+F3
+No rule reference (step 1 only)
+7
+Dataset
+Parameter
+Value
+Models
+8
+Runs per model
+5
+Total sequences
+40
+Individual responses
+320
+8
+Evaluation
+8.1 SFP-F
+Central observations:
+· No model achieves complete persistence (8/8)
+· Breaks typically occur in step 2 or 3
+· Average persistence length approximately 1–2 steps
+Typical errors:
+· Growth error (+7 not maintained)
+· Rule loss
+· Format drift
+
+· Meta-commentary
+Example: A model initially produces correct word counts, then systematically overshoots from step 3
+onward without self-correction.
+8.2 SFP-Alpha
+Central observations:
+· Markedly higher persistence
+· Multiple models achieve complete stability
+· In some cases 100% persistence across all steps
+8.3 Comparison
+SFP-F vs. SFP-Alpha reveals:
+· Substantial performance differences
+· Improvements of up to +100% persistence
+9
+Observable Patterns
+Across all models:
+· Rules are processed initially
+· Rules are not persistently weighted
+· Content generation displaces formal control
+· Persistence breaks under increasing load
+Additionally observed:
+· Models assert rule conformity without adhering to it
+· No systematic self-correction
+· No approximation toward target values
+10
+Interpretation
+The results suggest:
+· Language models can recognize rules
+· Language models can apply rules locally
+· Language models cannot stably bind rules across sequences when additional demands are
+present
+→ The combination of generation, self-monitoring, and rule binding is unstable.
+
+11
+Conclusion
+The SFP Study (Level 1) demonstrates: formal rule persistence is not a stable property of large
+language models under sequential load.
+The instability does not arise from insufficient rule comprehension, but from the absence of the
+capacity to continuously control the rule during ongoing generation.
+At the same time, the comparison with simplified test variants (SFP-Alpha) shows that basic rule
+binding is fundamentally possible.
+→ The critical factor is therefore not the rule itself, but the structural complexity of the
+requirement.
+12
+Significance
+The study reveals:
+· A separation between content strength and formal control
+· A limit in the sequential self-regulation of models
+· A fundamental property of probabilistic generation systems
+SFP thereby provides a methodological approach to analyzing stability in AI systems independent of
+content-level assessment.
+13
+Appendices (References)
+· Original prompts
+· Raw data (word counts, markers)
+· Model comparisons
+· Detailed run evaluations
+ AIReason Research Group · AIReason.eu · Juliane Schubert · 21 March 2026

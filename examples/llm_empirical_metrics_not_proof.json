@@ -1,0 +1,21 @@
+{
+  "query_type": "candidate_attractor",
+  "system_type": "llm_empirical",
+  "target_txt_reference": "target.txt",
+  "diagnostics": {
+    "target_centroid": [0.1, 0.2, 0.3],
+    "control_centroid": [0.0, 0.1, 0.1],
+    "centroid_distance": 0.2236,
+    "target_control_separation": 0.81,
+    "hidden_state_distances": [0.2, 0.18, 0.11],
+    "recovery_score": 0.37,
+    "bootstrap_ci": [0.22, 0.51],
+    "local_jacobian_estimates": {
+      "sampled_directions": 32,
+      "max_directional_gain": 0.72
+    },
+    "strict_gates": {
+      "empirical_gate_pass": true
+    }
+  }
+}

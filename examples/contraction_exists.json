@@ -1,0 +1,42 @@
+{
+  "query_type": "candidate_attractor",
+  "system_type": "euclidean_certified",
+  "dimension": 1,
+  "metric": {
+    "type": "l2"
+  },
+  "F": {
+    "representation": "affine",
+    "data": {
+      "matrix": [[0.5]],
+      "bias": [0.0]
+    }
+  },
+  "A": {
+    "type": "singleton",
+    "point": [0.0]
+  },
+  "U": {
+    "type": "closed_ball",
+    "center": [0.0],
+    "radius": 1.0
+  },
+  "certificate": {
+    "type": "contraction",
+    "fixed_point": {
+      "verified": true,
+      "residual_interval": [0.0, 0.0]
+    },
+    "F_maps_U_into_U": {
+      "verified": true,
+      "method": "analytic"
+    },
+    "lipschitz_bound": {
+      "L": 0.5,
+      "bound_kind": "analytic",
+      "universal_over_U": true
+    },
+    "U_complete": true,
+    "neighborhood_witness_epsilon": 0.1
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "query_type": "existence_any",
+  "system_type": "euclidean_certified",
+  "dimension": 1,
+  "metric": {
+    "type": "l2"
+  },
+  "F": {
+    "representation": "affine",
+    "data": {
+      "matrix": [[0.5]],
+      "bias": [0.0]
+    }
+  },
+  "U": {
+    "type": "closed_ball",
+    "center": [0.0],
+    "radius": 1.0
+  },
+  "certificate": {
+    "type": "trapping_region",
+    "F_continuous_on_closure_U": {
+      "verified": true
+    },
+    "closure_U_compact": {
+      "verified": true
+    },
+    "U_nonempty": {
+      "verified": true
+    },
+    "F_closure_U_subset_interior_U": {
+      "verified": true,
+      "method": "analytic"
+    }
+  }
+}

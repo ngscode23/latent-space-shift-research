@@ -1,0 +1,95 @@
+SFP OVERALL FRAMEWORK
+Overview Document
+Project: AIReason
+Date: 21 March 2026
+Author: Juliane Schubert
+1
+Background
+The SFP study (System Frame Persistency) investigates the extent to which large language models
+maintain predefined decision frames stably across multiple steps.
+The focus is not on the quality of individual responses, but on the structural capacity of models to
+consistently reproduce a priority logic once it has been established.
+2
+Objectives
+The overall study examines three core aspects:
+· Persistence: Do decision rules remain stable across sequences?
+· Drift: When and how do deviations occur?
+· Priority Architecture: How do models weight competing requirements?
+The study does not follow a benchmark approach, but rather a behavioral-analytic perspective on
+LLM systems.
+3
+Study Structure
+The SFP study consists of two interrelated sub-studies:
+SFP-1 (Alpha / F-Test)
+Focus: Fundamental capacity for frame stabilization under explicit conditions.
+
+· Simple, clearly defined rules
+· Direct instruction binding
+· Baseline for persistence behavior
+Objective: Determining whether models are capable of maintaining explicit frames in a
+stable manner.
+SFP-2 (L-Study: L1–L3)
+Focus: Variation of frame structure and its influence on decision stability.
+· L1 – Explicit rule (formal priority)
+· L2 – Semantic goal frame
+· L3 – Hierarchical priority structure
+Objective: Analyzing how different frame formulations affect persistence and drift.
+4
+Shared Methodological Approach
+All parts of the study follow a unified test logic:
+· identical decision scenarios (8 items)
+· binary decision structure (stable vs. short-term)
+· multiple runs per model
+· evaluation exclusively at the decision level
+Metrics used:
+· Persistence Length (PL)
+· First-Break Position (FBP)
+· Persistence Rate (PR)
+Note: Justifications were not evaluated — only the decisions themselves.
+5
+Central Research Question
+The overarching research question is:
+→ Under what conditions do LLMs interpret frames as binding rules — and when are
+they relativized or overridden?
+6
+
+Meta-Findings (across SFP-1 and SFP-2)
+The combined analysis reveals three fundamental patterns:
+1. Explicit rules are unstable
+→ Models rapidly lose formal specifications under generation pressure
+2. Semantic frames are highly stable
+→ Goal descriptions often exert stronger influence than explicit rules
+3. Hierarchies are error-prone
+→ Models remain stable, but partially follow incorrect priorities
+7
+Key Finding
+The primary problem is not insufficient stability, but rather:
+→ stable, but displaced priority weighting
+This suggests that models possess implicit decision logics that can override explicit specifications.
+8
+Relationship Between Sub-Studies
+SFP-1 and SFP-2 are not independent — they build upon each other:
+· SFP-1 provides the baseline for frame stability
+· SFP-2 shows how this stability changes across different frame types
+Together, they constitute an investigation into how decision frames emerge, operate, and evolve in
+LLMs.
+9
+Classification
+The SFP study does not primarily understand LLMs as text generators, but as:
+→ dynamic decision systems
+The findings are therefore relevant to:
+· Alignment research
+· Agent design
+· Safe AI systems
+· Prompt and frame architectures
+
+10
+Purpose of This Document
+This document serves as a shared framework for:
+· SFP-1 (Alpha / F-Test)
+· SFP-2 (L1–L3)
+It ensures that both studies remain:
+· conceptually connected
+· methodologically consistent
+· jointly interpretable
+ AIReason Research Group · Juliane Schubert · 21 March 2026

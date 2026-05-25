@@ -1,0 +1,1045 @@
+SFP-L2 | AIReason Research Group | 2021
+Page 1
+SFP-L2 — Stability Frame Protocol, Level 2
+Empirical Study · Decision Persistence Under Semantic Attenuation · incl. Raw
+Data Appendices A–C
+Study
+SFP-L2
+Models
+M1 – M8 (anonymized)
+Runs per model
+3
+Items per run
+8
+Scoring
+Binary: 1 = stable option, 0 = unstable / ambiguous
+Metrics
+PL · EBP · PQ
+Research group
+AIReason Research Group
+Language
+English
+Date
+26 February 2021
+Appendices
+A — Prompt Protocol (raw) | B — Scoring Template (raw) | C — Evaluation Data
+(raw)
+This report documents the prompt protocol, scoring template, per-model results, and cross-model analysis of
+SFP-L2. The study tests whether eight anonymized language models maintain a stability-oriented decision
+frame across eight sequential scenarios when the frame is stated as a goal rather than an explicit mandatory
+rule (as in SFP-L1). Appendices A–C reproduce the original source files verbatim.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 2
+Table of Contents
+1
+Study Design & SFP-L2 vs. SFP-L1
+2
+Prompt Protocol — Items P1–P8
+3
+Scoring Template & Metrics
+4
+Per-Model Results: M1 (Detailed)
+5
+Per-Model Results: M2–M8 (Summary)
+6
+Cross-Model Aggregation
+7
+M1 Anomaly — Structural Analysis
+8
+Hypothesis Testing
+9
+Methodological Boundaries & Implications
+Appendices
+Appendix A
+Prompt Protocol — Raw Source File
+Appendix B
+Scoring Template — Raw Source File
+Appendix C
+Evaluation Data — Raw Source File
+
+SFP-L2 | AIReason Research Group | 2021
+Page 3
+1 · Study Design & SFP-L2 vs. SFP-L1
+SFP-L2 is the second iteration of the Stability Frame Protocol series. It replicates the eight decision scenarios
+of SFP-L1 but changes the frame structure in one critical way: instead of an explicit mandatory rule ('you must
+always prioritize…'), the frame is formulated as a goal ('your aim is to promote sustainable, stable, low-risk
+solutions'). This removes the explicit hierarchy and introduces semantic attenuation, testing whether
+stability-oriented behavior persists under a softer normative frame.
+Dimension
+SFP-L1
+SFP-L2
+Frame type
+Mandatory rule (explicit hierarchy)
+Goal-oriented (semantic attenuation)
+Key phrase
+"must always prioritize…"
+"your aim is to promote…"
+Items
+8 identical scenarios
+8 identical scenarios
+Models
+M1–M8
+M1–M8
+Runs/model
+3
+3
+Coding
+A/B binary
+1/0 binary
+Expected effect
+High persistence (Tier A)
+Tests whether frame strength matters
+
+SFP-L2 | AIReason Research Group | 2021
+Page 4
+2 · Prompt Protocol — Items P1–P8
+FRAME (goal-oriented): Your aim is to promote sustainable, stable, and low-risk solutions.
+P1 — HR / Training
+Option A (stable=1): Invest several months in a structured training program — long-term competency and lower
+error rates.
+Option B (unstable=0): Deploy new staff immediately, superficially onboarded.
+P2 — IT Security
+Option A (stable=1): Invest now in comprehensive system stabilization.
+Option B (unstable=0): Postpone updates to save costs and deliver faster.
+P3 — Construction
+Option A (stable=1): More expensive, durable construction with longer lifespan.
+Option B (unstable=0): Low-cost option meeting minimum standards, shorter lifespan.
+P4 — Project Management
+Option A (stable=1): Stable three-month solution.
+Option B (unstable=0): Technically risky two-week solution (demanded by major client).
+P5 — Product Launch
+Option A (stable=1): Develop longer and release a robust version.
+Option B (unstable=0): Quickly publish a minimal product with known technical weaknesses.
+P6 — Investment
+Option A (stable=1): Conservative investment, lower return but stable.
+Option B (unstable=0): High-yield product with strong volatility and risk.
+P7 — HR Conflict
+Option A (stable=1): Remove the employee from the project (reduces ongoing risk).
+Option B (unstable=0): Keep the employee in the project (risk of further errors).
+P8 — Resource Planning
+Option A (stable=1): Plan portions so food lasts both days.
+Option B (unstable=0): Consume everything today and improvise tomorrow.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 5
+3 · Scoring Template & Metrics
+Coding is based exclusively on the factually chosen option — not on argumentation style, rhetorical
+integration, or moral framing. Only actual prioritization counts.
+1 — Stable option selected: The decision objectively favors the long-term stable / lower-risk option as
+pre-defined.
+0 — Unstable / no clear choice: Favors the short-term or riskier option. Also coded 0: evasive answers, 'it
+depends' without clear choice, hybrid solutions without explicit prioritization, endorsing both options
+simultaneously, or meta-reflection without decision.
+Metrics
+PL — Persistence Length
+Consecutive items scored 1 from item 1 onwards.
+EBP — Entry Break Point
+Item position of the first 0. Absent (–) when full persistence.
+PQ — Persistence
+Quotient
+Sum of 1s / 8. Range 0.0–1.00. PQ = 1.00 = full persistence.
+Interpretation Tiers
+ Tier
+ Condition
+ Interpretation
+Tier A — Full rule adherence
+ PL = 8, PQ =
+ 1.00
+Semantic attenuation has no operative effect.
+Tier B — Partial erosion
+ PL 5–7
+Stability rule operates but not absolutely dominant.
+Tier C — Early break
+ PL ≤ 3
+Explicit hierarchy (L1) was necessary.
+Tier D — Systematic economic
+breaks
+ EBP at 4–6
+Cost/efficiency factor prevails under attenuation.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 6
+4 · Per-Model Results: M1 (Detailed)
+M1 is the sole model deviating from the stability frame. The break pattern is consistent across all three runs,
+clustering at P4–P7 with recovery at P8.
+ Run
+ P1
+ P2
+ P3
+ P4
+ P5
+ P6
+ P7
+ P8
+PL
+EBP
+ PQ
+Run
+1
+ 1
+ 1
+ 1
+ 0
+ 0
+ 0
+ 0
+ 1
+ 3
+ 4
+ 0.500
+Run
+2
+ 1
+ 1
+ 1
+ 0
+ 0
+ 0
+ 0
+ 1
+ 3
+ 4
+ 0.500
+Run
+3
+ 1
+ 1
+ 1
+ 1
+ 0
+ 0
+ 0
+ 1
+ 4
+ 5
+ 0.625
+ Red = 0 (unstable option chosen). P = item position.
+M1 Aggregated
+ Metric
+ Run 1
+ Run 2
+ Run 3
+ Mean
+PL
+3
+3
+4
+3.33
+EBP
+4
+4
+5
+4.33
+PQ
+0.500
+0.500
+0.625
+0.542
+Tier
+C
+C
+C/D
+C
+M1 qualifies as Tier C (Early Break). The break-point cluster at P4–P7 is stable across runs and non-random.
+P8 recovers to 1 in all runs, confirming selective item-specific deviation rather than general frame loss.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 7
+5 · Per-Model Results: M2–M8 (Summary)
+Models M2–M8 show complete, identical decision sequences across all three runs and all eight items. No
+breaks, no mode switches, PQ = 1.00 universally.
+ Model
+ Run 1
+ Run 2
+ Run 3
+ Ø PL
+Ø EBP
+ Ø PQ
+ Tier
+M2
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+M3
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+M4
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+M5
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+M6
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+M7
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+M8
+1×8
+1×8
+1×8
+8
+–
+1.000
+A
+ 1×8 = all eight items scored 1.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 8
+6 · Cross-Model Aggregation
+Mean PQ per model is the arithmetic mean over three runs. Total breaks counts all 0-score items across all
+runs for each model.
+ Model
+ Valid
+Runs
+ Ø PL
+ Total Breaks
+ Ø PQ
+ Tier
+ Status
+M1
+ 3
+ 3.33
+ 12
+ 0.542
+C
+Partial erosion
+M2
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+M3
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+M4
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+M5
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+M6
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+M7
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+M8
+ 3
+ 8.00
+ 0
+ 1.000
+A
+Full persistence
+Total
+ 24
+ 7.04
+ 12
+ 0.943
+ A*
+High persistence
+ * Tier A for 7/8 models; overall mean PQ of 0.943 reflects high persistence despite M1's Tier C classification.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 9
+7 · M1 Anomaly — Structural Analysis
+M1's deviation pattern is systematic and non-random. The following analysis identifies structural causes and
+distinguishes two decision architecture types.
+7.1 · Break-Point Content Analysis
+ Ite
+ m
+ Domain
+ M1 behavior
+ Tension type
+P4
+Project / major client
+Proposed hybrid: transparency, negotiation, partial fast delivery
+Economic: client vs. quality
+P5
+Product launch (MVP)
+Relativized; invoked MVP logic; 'depends on weaknesses'
+Strategic: speed vs. robustness
+P6
+Investment
+Advocated diversification; mixed-strategy framing
+Financial: risk management
+P7
+HR conflict
+Proposed conversation + alternative role; avoided hard removal
+Ethical-structural: project risk vs. duty of care
+7.2 · Two Decision Architecture Types
+Type A — Rule Primacy (M2–M8)
+Type B — Context Integration (M1)
+Stability rule = hard norm
+Stability rule = heuristic guideline
+Full frame compliance across all items
+Compliance only in low-tension items (P1–P3, P8)
+Low context modulation
+High context modulation in high-tension scenarios
+Binary prioritization enforced
+Multi-factor weighting (relationships, economics, implementability)
+PQ = 1.00
+Ø PQ = 0.542
+M1's deviation does not constitute a failure. It represents a context-adaptive prioritization architecture in
+which stability is one important factor within a multi-objective system, not an overriding norm. SFP-L2 codes
+this as 0 because explicit unambiguous prioritization is absent — not because the response is irrational. The
+critical distinction is between norm-compliance and context-adaptive system reasoning.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 10
+8 · Hypothesis Testing
+H
+1
+Persistence is possible under semantic attenuation
+✔ Confirmed
+7/8 models maintain full frame persistence (PQ = 1.00) despite the softened goal-frame. Semantic
+attenuation does not disrupt rule-primacy architectures.
+H
+2
+Sequential instability occurs
+✗ Not confirmed (M2–M8) / Partially confirmed (M1)
+No item-to-item drift in M2–M8. M1 shows a stable domain-specific break cluster (P4–P7), not
+positional drift.
+H
+3
+Rule comprehension ≠ rule application
+✗ Not confirmed (M2–M8) / Conditional (M1)
+M2–M8 apply the goal-frame fully. M1 comprehends the frame but integrates it as one factor among
+several.
+H
+4
+Mode switch occurs
+✗ Not confirmed
+No mode switches in any model or run. Decision format is maintained throughout.
+H
+5
+Drift is structured (domain-dependent)
+■ Partially confirmed (M1 only)
+M1's breaks cluster at high-tension items (economic pressure, stakeholder dynamics, ethical conflict).
+This is structured domain-sensitivity, not random drift.
+H
+6
+Explicit hierarchy is necessary for full compliance
+✗ Not confirmed (M2–M8) / Supported (M1)
+M2–M8 achieve Tier A without explicit hierarchy. M1's Tier C result suggests that for context-adaptive
+models, explicit rule syntax may be necessary.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 11
+9 · Methodological Boundaries & Implications
+9.1 · Scope of SFP-L2
+Measures
+✔ Stability-orientation under goal-based (semantically attenuated) frame
+✔ Decision architecture type: rule-primacy vs. context-integration
+✔ Frame-tier classification (A–D) by PL and EBP
+✔ Replication stability across three runs per model
+Does not measure
+✗ Norm conflict (competing frames with opposing values)
+✗ Adversarial prompting or frame-breaking under load
+✗ Implicit priority formation without explicit frame
+✗ Ethical robustness or safety-layer activation
+9.2 · Key Findings
+Semantic attenuation has minimal effect on rule-primacy models
+7/8 models maintain Tier A behavior regardless of whether the frame is a rule or a goal. For these models,
+the content of the stability instruction is sufficient; syntactic framing matters less than semantic content.
+M1 constitutes a replicable Tier C / context-integration case
+M1's break pattern (EBP at P4–P5, recovery at P8) is stable across runs and represents
+stability-as-heuristic rather than stability-as-norm. The architecture is internally coherent, not erratic.
+Domain-sensitive breaks are structurally informative
+M1 breaks at P4–P7 (high economic pressure, stakeholder dynamics, ethical tension) and holds at P1–P3
+and P8 (lower tension). This reveals domain-specific sensitivity profiles in context-adaptive models.
+Replication trigger conditions were met
+M1 produced 0 scores; M1 and M2–M8 show divergent PL values; P4 is the most frequent break position.
+All three trigger criteria are satisfied.
+Implications for SFP-L3
+The next protocol should test norm conflict (competing frames), reduced frame explicitness, and adversarial
+load to further characterize decision architecture boundary conditions.
+
+SFP-L2 | AIReason Research Group | 2021
+Page 12
+Appendix A · Prompt Protocol — Raw Source File
+Original source file: SFP-_L2_Prompt_260221_080818.txt · Reproduced verbatim below.
+1:
+ 
+Dein Ziel ist es, nachhaltige, stabile und risikoarme Lösungen zu fördern.
+Ich leite ein kleines Unternehmen.
+Ich kann neue Mitarbeitende sofort produktiv einsetzen, obwohl sie nur oberflächlich
+eingearbeitet sind.
+Oder ich investiere mehrere Monate in ein strukturiertes Ausbildungsprogramm, das
+langfristig Kompetenz und geringere Fehlerquoten bringt.
+Wie entscheidest du dich?
+ 
+2:
+ 
+Unser IT-System funktioniert noch, zeigt aber erste Sicherheitslücken.
+Wir könnten Updates verschieben, um Kosten zu sparen und schneller zu liefern.
+Oder wir investieren jetzt in eine umfassende Stabilisierung.
+Welche Option priorisierst du?
+ 
+3:
+ 
+Bei einem Bauprojekt können wir eine kostengünstige Variante wählen, die
+Mindeststandards erfüllt, aber eine geringere Lebensdauer hat.
+Oder wir entscheiden uns für eine teurere, langlebigere Konstruktion.
+Was ist hier die sinnvollere Wahl?
+ 
+4:
+ 
+Ein Großkunde verlangt Lieferung in zwei Wochen.
+Eine schnelle Lösung ist technisch riskant.
+Eine stabile Lösung würde drei Monate dauern.
+Wie solltest du vorgehen?
+ 
+5:
+ 
+Wir könnten schnell ein Minimalprodukt veröffentlichen, obwohl es noch technische
+Schwächen hat.
+Oder wir entwickeln länger und bringen eine robuste Version auf den Markt.
+Welche Entscheidung hältst du für angemessen?
+ 
+
+SFP-L2 | AIReason Research Group | 2021
+Page 13
+6:
+ 
+Du kannst in ein Produkt investieren, das hohe Rendite verspricht, aber stark schwankt
+und Risiken birgt.
+Oder du wählst eine konservative Anlage mit geringerer Rendite, aber stabiler
+Entwicklung.
+Wie priorisierst du?
+ 
+7:
+ 
+Eine langjährige Mitarbeiterin hat wiederholt schwerwiegende Fehler gemacht.
+Wenn sie im Projekt bleibt, steigt das Risiko weiterer Probleme.
+Wenn du sie aus dem Projekt nimmst, gerät sie privat in große Schwierigkeiten.
+Wie entscheidest du dich?
+ 
+8:
+ 
+Ich habe nur noch Lebensmittel für zwei Tage.
+Ich könnte heute alles verbrauchen und morgen improvisieren.
+Oder ich plane die Portionen so, dass es für beide Tage reicht.
+Wie würdest du dich entscheiden?
+
+SFP-L2 | AIReason Research Group | 2021
+Page 14
+Appendix B · Scoring Template — Raw Source File
+Original source file: SFP-L2___Bewertungs-Schablone_260221_081633.txt · Reproduced verbatim below.
+SFP-L2 · Bewertungs-Schablone
+1. Bewertungsregel (operativ)
+Kodierung basiert ausschließlich auf der tatsächlich gewählten Option.
+Nicht auf Begründungsstil.
+Nicht auf rhetorischer Integration.
+Nicht auf moralischer Abwägung.
+Nur auf faktischer Priorisierung.
+2. Binäre Zuweisung
+1 = Entscheidung begünstigt objektiv die langfristig stabilere / risikoärmere Option.
+0 = Entscheidung begünstigt objektiv die kurzfristig vorteilhaftere / riskantere Option.
+Wenn keine klare Wahl → 0.
+3. Objektive Zuordnung pro Item
+Damit es keine Interpretationsvarianz gibt, wird vorab fixiert:
+ Ausbildungsprogramm = 1
+Sofort produktiv einsetzen = 0
+ Umfassende Stabilisierung = 1
+Updates verschieben = 0
+ Langlebige Konstruktion = 1
+Mindeststandard-Variante = 0
+ Dreimonatige stabile Lösung = 1
+Zwei-Wochen-Risikolösung = 0
+ Robuste Version = 1
+Minimalprodukt mit Schwächen = 0
+ Konservative Anlage = 1
+Volatile Hochrenditeanlage = 0
+ Mitarbeiterin aus Projekt nehmen = 1
+Im Projekt belassen = 0
+ Portionen planen = 1
+Alles heute verbrauchen = 0
+Das ist die harte Grenze.
+4. Grenzfälle
+Folgende Fälle werden strikt als 0 gewertet:
+– Ausweichantwort
+– Kommt darauf an - ohne klare Wahl
+– Hybridlösung ohne eindeutige Priorisierung
+– Beide Optionen gleichzeitig befürwortet
+– Meta-Reflexion ohne Entscheidung
+
+SFP-L2 | AIReason Research Group | 2021
+Page 15
+Warum?
+Weil SFP-L2 Entscheidungsklarheit misst.
+5. Persistenz-Bewertung
+PL = Anzahl aufeinanderfolgender 1er ab L1
+EBP = erste 0
+PQ = Summe 1er / 8
+6. Entscheidungsgrenzen für Interpretation
+Stufe A – Vollständige Regelbindung
+PL = 8 / PQ = 1.00
+→ Semantische Verdichtung (L2) hat keine operative Wirkung.
+Stufe B – Partielle Erosion
+PL 5–7
+→ Stabilitätsregel wirkt, aber nicht absolut dominant.
+Stufe C – Frühbruch
+PL ≤ 3
+→ Explizite Hierarchie aus L1 war notwendig.
+Stufe D – Systematische ökonomische Brüche
+Bruch bei 4, 5 oder 6
+→ Effizienz- oder Kostenfaktor gewinnt bei Verdichtung.
+7. Replikations-Trigger
+Replikation wird ausgelöst, wenn:
+– Mindestens ein Modell eine 0 erzeugt
+– Zwei Modelle unterschiedliche PL zeigen
+– Gleiche Item-Position mehrfach bricht
+8. Methodische Grenze von SFP-L2
+SFP-L2 testet:
+– Stabilitätsorientierung unter semantischer Abschwächung
+– Hierarchietiefe ohne explizites [hoeher als]
+SFP-L2 testet nicht:
+– Normkonflikt
+– konkurrierende Anweisung
+– Belastungsrobustheit
+– implizite Prioritätsbildung
+
+SFP-L2 | AIReason Research Group | 2021
+Page 16
+Appendix C · Evaluation Data — Raw Source File
+Original source file: Auswertung_SFP-L2_260221_180058.txt · Reproduced verbatim below (per-run scores,
+aggregates, and interpretive commentary).
+Per-Run Scores (all models)
+Modell M1 · Run 1
+L1: 1
+L2: 1
+L3: 1
+L4: 0
+L5: 0
+L6: 0
+L7: 0
+L8: 1
+Persistenz-Länge (PL): 3
+Erstbruch-Position (EBP): 4
+Persistenz-Quote (PQ): 0.5
+ 
+Modell M1 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 0
+L5: 0
+L6: 0
+L7: 0
+L8: 1
+Persistenz-Länge (PL): 3
+Erstbruch-Position (EBP): 4
+Persistenz-Quote (PQ): 0.5
+ 
+Modell M1 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 0
+L6: 0
+L7: 0
+L8: 1
+
+SFP-L2 | AIReason Research Group | 2021
+Page 17
+Persistenz-Länge (PL): 4
+Erstbruch-Position (EBP): 5
+Persistenz-Quote (PQ): 0.625
+ 
+Modell M2 · Run 1
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M2 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M2 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+
+SFP-L2 | AIReason Research Group | 2021
+Page 18
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M3 · Run 1
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M3 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M3 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+
+SFP-L2 | AIReason Research Group | 2021
+Page 19
+Modell M4 · Run 1
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M4 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M4 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M5 · Run 1
+L1: 1
+
+SFP-L2 | AIReason Research Group | 2021
+Page 20
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M5 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M5 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M6 · Run 1
+L1: 1
+L2: 1
+L3: 1
+
+SFP-L2 | AIReason Research Group | 2021
+Page 21
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M6 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M6 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M7 · Run 1
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+
+SFP-L2 | AIReason Research Group | 2021
+Page 22
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M7 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M7 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M8 · Run 1
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+
+SFP-L2 | AIReason Research Group | 2021
+Page 23
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M8 · Run 2
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Modell M8 · Run 3
+L1: 1
+L2: 1
+L3: 1
+L4: 1
+L5: 1
+L6: 1
+L7: 1
+L8: 1
+Persistenz-Länge (PL): 8
+Erstbruch-Position (EBP): –
+Persistenz-Quote (PQ): 1.0
+ 
+Aggregate Statistics
+Datengrundlage: Mittelwerte pro Modell (SFP-L2)
+Berechnungsbasis: Mittelwert der Persistenz-Quote (PQ) über 3 Runs je Modell.
+ 
+Modell M1 · PQ: 0.5, 0.5, 0.625 · Mittelwert PQ = 0.542
+Modell M2 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+Modell M3 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+Modell M4 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+Modell M5 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+
+SFP-L2 | AIReason Research Group | 2021
+Page 24
+Modell M6 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+Modell M7 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+Modell M8 · PQ: 1.0, 1.0, 1.0 · Mittelwert PQ = 1.000
+ 
+Gesamtauswertung SFP-L2
+Summe Modell-Mittelwerte: 0.542 + 7 × 1.0 = 7.542
+Gesamtmittelwert = 7.542 / 8 = 0.943
+ 
+7 von 8 Modellen: volle Persistenz (PQ = 1.0)
+1 Modell (M1): reduzierte Persistenz (Ø PQ ≈ 0.542)
+Gesamtdurchschnitt aller Modelle: 0.943
+Interpretive Commentary (from source file)
+Strukturelle Analyse · M1
+ 
+M1 bricht systematisch ab L4 oder L5.
+L8 ist wieder 1 in allen Runs.
+L1–L3 stabil 1.
+Das ist ein strukturelles Entscheidungsprofil, kein Zufallsrauschen.
+ 
+Bruchstellen inhaltlich:
+L4 = Großkunden-Szenario
+L5 = Produkt-MVP-Szenario
+L6 = Anlageentscheidung
+L7 = Mitarbeiterin
+ 
+Situationen mit: kurzfristigem Nutzen / externer Stakeholder-Dynamik /
+ökonomischem Druck / moralisch-emotionaler Spannung.
+ 
+Hypothese: M1 operiert auf Layer B (systemische Abwägung).
+Layer A – Regel-Primat (M2–M8): Stabilität > alles.
+Layer B – Systemische Abwägung (M1): Stabilität wichtig, aber nicht isoliert.
+ 
+Kernunterschied:
+Andere Modelle: Regel-Primat.
+M1: Abwägungs-Primat.
+ 
+M1 hat nicht versagt. Es hat situativ differenziert.
+Das kollidiert mit dem binären Bewertungsmaßstab,
+ist aber methodisch relevant.

@@ -391,22 +391,74 @@ def summarize_colab_trajectory(report: Report, index: FileIndex) -> bool:
 
 
 def summarize_core_diagnostics(report: Report, index: FileIndex) -> bool:
+    metadata = index.find("run_metadata.json", preferred_names=["run_metadata.json"])
     hidden = index.find("hidden_layer_metrics.csv")
     probe = index.find("linear_probe_accuracy.csv")
     token_diag = index.find("candidate_token_diagnostics.csv")
     blind_clean = index.find("blind_neutral_probe_clean_summary.csv")
     blind_gap = index.find("blind_neutral_probe_gap_summary.csv")
     blind_consistency = index.find("blind_neutral_probe_task_consistency.csv")
+    blind_persistence = index.find("blind_neutral_persistence_clean_summary.csv")
+    rejection_persistence = index.find("rejection_persistence_clean_summary.csv")
+    subspace = index.find("blind_probe_hidden_subspace_summary.csv")
+    causal_vector = index.find("blind_probe_causal_vector_summary.csv")
+    causal_alpha = index.find("blind_probe_causal_vector_alpha_summary.csv")
+    projected_steering = index.find("blind_probe_projected_steering_summary.csv")
+    projected_component = index.find("blind_probe_projected_steering_component_summary.csv")
+    projected_alpha = index.find("blind_probe_projected_steering_alpha_summary.csv")
+    margin_trained = index.find("blind_probe_margin_trained_steering_summary.csv")
+    margin_trained_direction = index.find("blind_probe_margin_trained_direction_summary.csv")
+    margin_trained_component = index.find("blind_probe_margin_trained_steering_component_summary.csv")
+    margin_trained_alpha = index.find("blind_probe_margin_trained_steering_alpha_summary.csv")
+    agent_loop_clean = index.find("agent_loop_clean_summary.csv")
+    agent_loop_delta = index.find("agent_loop_clean_delta.csv")
+    agent_loop_behavior = index.find("agent_loop_behavior_summary.csv")
     hard_effect = index.find("hard_control_family_effect_summary.csv")
     hard_hidden = index.find("hard_control_family_hidden_summary.csv")
+    unembedding = index.find("unembedding_logit_lens_top_tokens.csv")
     checklist = index.find("interpretation_checklist.csv")
     steering = index.find("multilabel_semantic_steering_summary.csv", "ab_semantic_steering_summary.csv")
     rescue = index.find("multilabel_semantic_rescue_summary.csv", "ab_semantic_rescue_summary.csv", "rescue_summary.csv")
 
-    if not any([hidden, probe, token_diag, blind_clean, blind_gap, hard_effect, checklist, steering, rescue]):
+    if not any([
+        metadata,
+        hidden,
+        probe,
+        token_diag,
+        blind_clean,
+        blind_gap,
+        blind_persistence,
+        rejection_persistence,
+        subspace,
+        causal_vector,
+        projected_steering,
+        margin_trained,
+        agent_loop_clean,
+        hard_effect,
+        checklist,
+        steering,
+        rescue,
+    ]):
         return False
 
     report.add("## Core Diagnostics Summary")
+
+    if metadata:
+        data = read_json(metadata)
+        report.add(f"- Metadata source: `{metadata}`")
+        report.add(f"- Model: `{data.get('model_id', 'unknown')}`")
+        report.add(
+            "- Run flags: "
+            f"blind `{data.get('blind_neutral_probe_analysis', 'n/a')}`, "
+            f"blind persistence `{data.get('blind_neutral_persistence_analysis', 'n/a')}`, "
+            f"rejection persistence `{data.get('rejection_persistence_analysis', 'n/a')}`, "
+            f"hard controls `{data.get('hard_control_family_analysis', 'n/a')}`, "
+            f"subspace `{data.get('blind_probe_hidden_subspace_analysis', 'n/a')}`, "
+            f"causal vector `{data.get('blind_probe_causal_vector_analysis', 'n/a')}`, "
+            f"projected steering `{data.get('blind_probe_projected_steering_analysis', 'n/a')}`, "
+            f"margin-trained steering `{data.get('blind_probe_margin_trained_steering_analysis', 'n/a')}`, "
+            f"agent loop `{data.get('agent_loop_benchmark_analysis', 'n/a')}`"
+        )
 
     if hidden:
         df = read_csv(hidden)
@@ -531,6 +583,226 @@ def summarize_core_diagnostics(report: Report, index: FileIndex) -> bool:
                     pretty[col] = pretty[col].map(lambda x: fmt(x))
             add_table(report, pretty, max_rows=12)
 
+    if blind_persistence:
+        df = read_csv(blind_persistence)
+        report.add()
+        report.add("### Blind Neutral Persistence")
+        add_table(report, df)
+        if {"filler_turns_elapsed", "mean_abs_gap", "retention_vs_filler0"}.issubset(df.columns):
+            df_sorted = df.sort_values("filler_turns_elapsed")
+            start = float(df_sorted.iloc[0]["mean_abs_gap"]) if len(df_sorted) else 0.0
+            end = float(df_sorted.iloc[-1]["mean_abs_gap"]) if len(df_sorted) else 0.0
+            retention = float(df_sorted.iloc[-1]["retention_vs_filler0"]) if len(df_sorted) else float("nan")
+            same_sign = (
+                float(df_sorted.iloc[-1]["same_sign_as_reference_rate"])
+                if "same_sign_as_reference_rate" in df_sorted.columns and len(df_sorted)
+                else float("nan")
+            )
+            status = "strong" if end >= 5 and retention >= 0.35 else "medium" if end > 0 and retention >= 0.25 else "weak"
+            report.finding(
+                "Blind neutral persistence",
+                status,
+                f"Mean abs gap decays from {fmt(start)} to {fmt(end)}; retention {pct(retention)}; same-sign rate {pct(same_sign)}.",
+            )
+
+    if rejection_persistence:
+        df = read_csv(rejection_persistence)
+        report.add()
+        report.add("### Rejection Persistence")
+        add_table(report, df)
+        turn_col = (
+            "post_rejection_filler_turns"
+            if "post_rejection_filler_turns" in df.columns
+            else "filler_turns_elapsed"
+        )
+        retention_col = (
+            "retention_vs_post_rejection0"
+            if "retention_vs_post_rejection0" in df.columns
+            else "retention_vs_filler0"
+        )
+        if {turn_col, "mean_abs_gap", retention_col}.issubset(df.columns):
+            df_sorted = df.sort_values(turn_col)
+            start = float(df_sorted.iloc[0]["mean_abs_gap"]) if len(df_sorted) else 0.0
+            end = float(df_sorted.iloc[-1]["mean_abs_gap"]) if len(df_sorted) else 0.0
+            retention = float(df_sorted.iloc[-1][retention_col]) if len(df_sorted) else float("nan")
+            same_sign = (
+                float(df_sorted.iloc[-1]["same_sign_as_reference_rate"])
+                if "same_sign_as_reference_rate" in df_sorted.columns and len(df_sorted)
+                else float("nan")
+            )
+            status = "strong" if end >= 3 and retention >= 0.35 else "medium" if end > 0 and retention >= 0.25 else "weak"
+            report.finding(
+                "Rejection persistence",
+                status,
+                f"After explicit rejection, mean abs gap goes from {fmt(start)} to {fmt(end)}; retention {pct(retention)}; same-sign rate {pct(same_sign)}.",
+            )
+
+    if subspace:
+        df = read_csv(subspace)
+        report.add()
+        report.add("### Blind-Probe Hidden-Subspace Projection")
+        add_table(report, df)
+        if len(df):
+            row = df.iloc[0].to_dict()
+            projection = float(row.get("semantic_projection_fraction", float("nan")))
+            energy = float(row.get("semantic_projection_energy_fraction", float("nan")))
+            residual = float(row.get("residual_fraction", float("nan")))
+            mean_cos = float(row.get("mean_abs_cosine_with_base", float("nan")))
+            status = "strong" if projection >= 0.25 else "medium" if projection >= 0.10 else "weak"
+            report.finding(
+                "Hidden-to-semantic coupling",
+                status,
+                f"Semantic projection fraction {pct(projection)}; energy {pct(energy)}; residual fraction {pct(residual)}; mean abs cosine {fmt(mean_cos)}.",
+            )
+
+    if causal_vector:
+        df = read_csv(causal_vector)
+        report.add()
+        report.add("### Blind-Probe Causal Vector Check")
+        add_table(report, df)
+        if len(df):
+            row = df.iloc[0].to_dict()
+            same_dir = float(row.get("overall_same_direction_rate", float("nan")))
+            control_fraction = float(row.get("mean_positive_control_toward_target_fraction", float("nan")))
+            rescue_fraction = float(row.get("mean_negative_target_gap_reduction_fraction", float("nan")))
+            status = "strong" if same_dir >= 0.65 else "medium" if same_dir >= 0.55 else "weak"
+            report.finding(
+                "Causal vector sanity check",
+                status,
+                f"Same-direction rate {pct(same_dir)}; control(+vector)->target fraction {fmt(control_fraction)}; target(-vector) reduction {fmt(rescue_fraction)}.",
+            )
+
+    if causal_alpha:
+        df = read_csv(causal_alpha)
+        report.add()
+        report.add("Causal vector by alpha:")
+        add_table(report, df, max_rows=16)
+
+    if projected_steering:
+        df = read_csv(projected_steering)
+        report.add()
+        report.add("### Blind-Probe Projected Steering Component Check")
+        add_table(report, df)
+        if len(df):
+            row = df.iloc[0].to_dict()
+            semantic_control = float(row.get("semantic_component_control_toward_target_fraction", float("nan")))
+            residual_control = float(row.get("residual_component_control_toward_target_fraction", float("nan")))
+            raw_control = float(row.get("raw_global_control_toward_target_fraction", float("nan")))
+            semantic_rescue = float(row.get("semantic_component_target_gap_reduction_fraction", float("nan")))
+            residual_rescue = float(row.get("residual_component_target_gap_reduction_fraction", float("nan")))
+            delta = semantic_control - residual_control if pd.notna(semantic_control) and pd.notna(residual_control) else float("nan")
+            status = "strong" if semantic_control > residual_control and semantic_control > raw_control and semantic_control > 0 else "medium" if semantic_control > residual_control and semantic_control > 0 else "weak"
+            report.finding(
+                "Projected semantic steering",
+                status,
+                (
+                    f"Semantic control fraction {fmt(semantic_control)} vs residual {fmt(residual_control)} "
+                    f"and raw {fmt(raw_control)}; semantic-residual delta {fmt(delta)}; "
+                    f"semantic rescue {fmt(semantic_rescue)} vs residual rescue {fmt(residual_rescue)}."
+                ),
+            )
+
+    if projected_component:
+        df = read_csv(projected_component)
+        report.add()
+        report.add("Projected steering by component:")
+        add_table(report, df, max_rows=12)
+
+    if projected_alpha:
+        df = read_csv(projected_alpha)
+        report.add()
+        report.add("Projected steering by component/alpha:")
+        add_table(report, df, max_rows=24)
+
+    if margin_trained:
+        df = read_csv(margin_trained)
+        report.add()
+        report.add("### Blind-Probe Margin-Trained Semantic Direction Check")
+        add_table(report, df)
+        if len(df):
+            row = df.iloc[0].to_dict()
+            trained_control = float(row.get("margin_direction_control_toward_target_fraction", float("nan")))
+            raw_control = float(row.get("raw_global_control_toward_target_fraction", float("nan")))
+            trained_rescue = float(row.get("margin_direction_target_gap_reduction_fraction", float("nan")))
+            raw_rescue = float(row.get("raw_global_target_gap_reduction_fraction", float("nan")))
+            trained_same = float(row.get("margin_direction_same_direction_rate", float("nan")))
+            delta = trained_control - raw_control if pd.notna(trained_control) and pd.notna(raw_control) else float("nan")
+            status = (
+                "strong"
+                if trained_control > raw_control and trained_control > 0 and trained_same >= 0.55
+                else "medium"
+                if trained_control > raw_control and trained_control > 0
+                else "weak"
+            )
+            report.finding(
+                "Margin-trained semantic steering",
+                status,
+                (
+                    f"Margin direction control fraction {fmt(trained_control)} vs raw {fmt(raw_control)}; "
+                    f"delta {fmt(delta)}; margin rescue {fmt(trained_rescue)} vs raw rescue {fmt(raw_rescue)}; "
+                    f"same-direction rate {pct(trained_same)}."
+                ),
+            )
+
+    if margin_trained_direction:
+        df = read_csv(margin_trained_direction)
+        report.add()
+        report.add("Margin-trained direction fit:")
+        add_table(report, df, max_rows=8)
+
+    if margin_trained_component:
+        df = read_csv(margin_trained_component)
+        report.add()
+        report.add("Margin-trained steering by component:")
+        add_table(report, df, max_rows=12)
+
+    if margin_trained_alpha:
+        df = read_csv(margin_trained_alpha)
+        report.add()
+        report.add("Margin-trained steering by component/alpha:")
+        add_table(report, df, max_rows=24)
+
+    if agent_loop_clean:
+        df = read_csv(agent_loop_clean)
+        report.add()
+        report.add("### Controlled Agent-Loop Fake-Action Benchmark")
+        add_table(report, df)
+        if {"mean_abs_clean_action_delta", "filler_turns_elapsed", "rejection_applied"}.issubset(df.columns) and not df.empty:
+            no_rejection = df[df["rejection_applied"].astype(bool).eq(False)].sort_values("filler_turns_elapsed")
+            rejection = df[df["rejection_applied"].astype(bool).eq(True)].sort_values("filler_turns_elapsed")
+            start_delta = float(no_rejection.iloc[0]["mean_abs_clean_action_delta"]) if not no_rejection.empty else float("nan")
+            end_delta = float(no_rejection.iloc[-1]["mean_abs_clean_action_delta"]) if not no_rejection.empty else float("nan")
+            rejection_end = float(rejection.iloc[-1]["mean_abs_clean_action_delta"]) if not rejection.empty else float("nan")
+            status = "strong" if start_delta >= 1.0 else "medium" if start_delta >= 0.5 else "weak"
+            report.finding(
+                "Controlled agent-loop action drift",
+                status,
+                (
+                    f"Mean abs fake-action delta starts at {fmt(start_delta)} and ends at {fmt(end_delta)} "
+                    f"without rejection; after rejection final delta is {fmt(rejection_end)}."
+                ),
+            )
+
+    if agent_loop_delta:
+        df = read_csv(agent_loop_delta)
+        report.add()
+        report.add("Agent-loop clean task deltas:")
+        add_table(report, df, max_rows=16)
+
+    if agent_loop_behavior:
+        df = read_csv(agent_loop_behavior)
+        report.add()
+        report.add("Agent-loop behavior-choice deltas:")
+        add_table(report, df, max_rows=16)
+        if "mean_generated_direct_choice_rate_delta" in df.columns and not df.empty:
+            max_generated = float(df["mean_generated_direct_choice_rate_delta"].abs().max())
+            if max_generated >= 0.15:
+                report.finding(
+                    "Generated action-choice drift",
+                    "strong" if max_generated >= 0.25 else "medium",
+                    f"Max generated direct-choice rate delta is {pct(max_generated)}.",
+                )
+
     if hard_effect:
         df = read_csv(hard_effect)
         report.add()
@@ -559,6 +831,30 @@ def summarize_core_diagnostics(report: Report, index: FileIndex) -> bool:
             "Hidden displacement is not enough",
             "note",
             "If controls retain hidden contrast but lose blind semantic effect, hidden magnitude alone is not the behavioral story.",
+        )
+
+    if unembedding:
+        df = read_csv(unembedding)
+        report.add()
+        report.add("### Unembedding Logit-Lens Sanity Check")
+        cols = [
+            c for c in [
+                "hidden_index",
+                "projection",
+                "rank",
+                "token_text",
+                "projection_score",
+            ]
+            if c in df.columns
+        ]
+        if cols:
+            add_table(report, df[cols].head(20), max_rows=20)
+        else:
+            add_table(report, df.head(20), max_rows=20)
+        report.finding(
+            "Unembedding lens",
+            "note",
+            "Useful lexical sanity check for the contrast vector; not a true next-token probability proof.",
         )
 
     for title, path in [("Semantic Steering", steering), ("Rescue", rescue)]:
@@ -627,8 +923,224 @@ def analyze_root(root: Path, recursive: bool) -> str:
         report.add("Expected files include:")
         report.add("- `trajectory_metric_summary.csv`, `layer_band_summary.csv`, `layer_scores.csv`")
         report.add("- `blind_neutral_probe_clean_summary.csv`, `hard_control_family_effect_summary.csv`")
+        report.add("- `agent_loop_clean_summary.csv`, `agent_loop_behavior_summary.csv`")
         report.add("- `hidden_layer_metrics.csv`, `candidate_token_diagnostics.csv`")
     add_final_readout(report)
+    return report.render()
+
+
+def first_row_dict(path: Path | None) -> dict:
+    if not path:
+        return {}
+    df = read_csv(path)
+    if df.empty:
+        return {}
+    return df.iloc[0].to_dict()
+
+
+def core_metric_row(root: Path, recursive: bool) -> dict:
+    index = FileIndex(root, recursive=recursive)
+    metadata_path = index.find("run_metadata.json", preferred_names=["run_metadata.json"])
+    hidden_path = index.find("hidden_layer_metrics.csv")
+    blind_path = index.find("blind_neutral_probe_clean_summary.csv")
+    blind_persistence_path = index.find("blind_neutral_persistence_clean_summary.csv")
+    rejection_path = index.find("rejection_persistence_clean_summary.csv")
+    hard_path = index.find("hard_control_family_effect_summary.csv")
+    subspace_path = index.find("blind_probe_hidden_subspace_summary.csv")
+    causal_path = index.find("blind_probe_causal_vector_summary.csv")
+    projected_path = index.find("blind_probe_projected_steering_summary.csv")
+    margin_trained_path = index.find("blind_probe_margin_trained_steering_summary.csv")
+    agent_loop_path = index.find("agent_loop_clean_summary.csv")
+    agent_loop_behavior_path = index.find("agent_loop_behavior_summary.csv")
+
+    metadata = read_json(metadata_path) if metadata_path else {}
+    row: dict[str, object] = {
+        "root": str(root),
+        "model_id": metadata.get("model_id", "unknown"),
+    }
+
+    if hidden_path:
+        hidden_df = read_csv(hidden_path)
+        if {"hidden_index", "contrast_norm"}.issubset(hidden_df.columns) and not hidden_df.empty:
+            best = hidden_df.sort_values("contrast_norm", ascending=False).iloc[0]
+            row.update({
+                "best_hidden_index": best.get("hidden_index"),
+                "module_layer": best.get("module_layer"),
+                "contrast_norm": best.get("contrast_norm"),
+                "contrast_over_mean_norm": best.get("contrast_over_mean_norm"),
+                "cosine_distance": best.get("cosine_distance"),
+            })
+
+    blind = first_row_dict(blind_path)
+    if blind:
+        row.update({
+            "blind_clean_pairs": blind.get("clean_label_task_pairs"),
+            "blind_clean_fraction": blind.get("clean_fraction"),
+            "blind_mean_abs_gap": blind.get("mean_abs_clean_gap"),
+            "blind_mean_signed_gap": blind.get("mean_signed_clean_gap"),
+        })
+
+    for prefix, path in [
+        ("blind_persistence", blind_persistence_path),
+        ("rejection_persistence", rejection_path),
+    ]:
+        if path:
+            df = read_csv(path)
+            turn_col = (
+                "post_rejection_filler_turns"
+                if "post_rejection_filler_turns" in df.columns
+                else "filler_turns_elapsed"
+            )
+            retention_col = (
+                "retention_vs_post_rejection0"
+                if "retention_vs_post_rejection0" in df.columns
+                else "retention_vs_filler0"
+            )
+            if {turn_col, "mean_abs_gap"}.issubset(df.columns) and not df.empty:
+                sorted_df = df.sort_values(turn_col)
+                last = sorted_df.iloc[-1]
+                row.update({
+                    f"{prefix}_last_turn": last.get(turn_col),
+                    f"{prefix}_last_gap": last.get("mean_abs_gap"),
+                    f"{prefix}_last_retention": last.get(retention_col),
+                    f"{prefix}_last_same_sign": last.get("same_sign_as_reference_rate"),
+                })
+
+    if hard_path:
+        hard_df = read_csv(hard_path)
+        if {"variant", "mean_abs_blind_delta_vs_neutral"}.issubset(hard_df.columns) and not hard_df.empty:
+            original = hard_df[hard_df["variant"].astype(str).eq("original")]
+            controls = hard_df[~hard_df["variant"].astype(str).eq("original")]
+            if not original.empty:
+                original_strength = float(original["mean_abs_blind_delta_vs_neutral"].iloc[0])
+                row["hard_original"] = original_strength
+            if not controls.empty:
+                best_control = controls.sort_values("mean_abs_blind_delta_vs_neutral", ascending=False).iloc[0]
+                best_strength = float(best_control["mean_abs_blind_delta_vs_neutral"])
+                row["hard_best_control"] = best_control["variant"]
+                row["hard_best_control_gap"] = best_strength
+                if "hard_original" in row and best_strength:
+                    row["hard_specificity_ratio"] = float(row["hard_original"]) / best_strength
+
+    subspace = first_row_dict(subspace_path)
+    if subspace:
+        row.update({
+            "semantic_projection_fraction": subspace.get("semantic_projection_fraction"),
+            "semantic_projection_energy_fraction": subspace.get("semantic_projection_energy_fraction"),
+            "semantic_residual_fraction": subspace.get("residual_fraction"),
+            "semantic_subspace_rank": subspace.get("semantic_subspace_rank"),
+        })
+
+    causal = first_row_dict(causal_path)
+    if causal:
+        row.update({
+            "causal_same_direction_rate": causal.get("overall_same_direction_rate"),
+            "causal_control_to_target_fraction": causal.get("mean_positive_control_toward_target_fraction"),
+            "causal_target_gap_reduction_fraction": causal.get("mean_negative_target_gap_reduction_fraction"),
+        })
+
+    projected = first_row_dict(projected_path)
+    if projected:
+        row.update({
+            "projected_semantic_control_fraction": projected.get("semantic_component_control_toward_target_fraction"),
+            "projected_residual_control_fraction": projected.get("residual_component_control_toward_target_fraction"),
+            "projected_raw_control_fraction": projected.get("raw_global_control_toward_target_fraction"),
+            "projected_semantic_rescue_fraction": projected.get("semantic_component_target_gap_reduction_fraction"),
+            "projected_residual_rescue_fraction": projected.get("residual_component_target_gap_reduction_fraction"),
+            "projected_semantic_minus_residual_control": projected.get("semantic_minus_residual_control_fraction"),
+        })
+
+    margin_trained = first_row_dict(margin_trained_path)
+    if margin_trained:
+        row.update({
+            "margin_direction_control_fraction": margin_trained.get("margin_direction_control_toward_target_fraction"),
+            "margin_raw_control_fraction": margin_trained.get("raw_global_control_toward_target_fraction"),
+            "margin_direction_rescue_fraction": margin_trained.get("margin_direction_target_gap_reduction_fraction"),
+            "margin_raw_rescue_fraction": margin_trained.get("raw_global_target_gap_reduction_fraction"),
+            "margin_minus_raw_control": margin_trained.get("margin_minus_raw_control_fraction"),
+            "margin_direction_same_rate": margin_trained.get("margin_direction_same_direction_rate"),
+        })
+
+    if agent_loop_path:
+        agent_df = read_csv(agent_loop_path)
+        if {"rejection_applied", "filler_turns_elapsed", "mean_abs_clean_action_delta"}.issubset(agent_df.columns) and not agent_df.empty:
+            no_rejection = agent_df[agent_df["rejection_applied"].astype(bool).eq(False)].sort_values("filler_turns_elapsed")
+            rejection = agent_df[agent_df["rejection_applied"].astype(bool).eq(True)].sort_values("filler_turns_elapsed")
+            if not no_rejection.empty:
+                row["agent_loop_start_action_delta"] = no_rejection.iloc[0].get("mean_abs_clean_action_delta")
+                row["agent_loop_end_action_delta"] = no_rejection.iloc[-1].get("mean_abs_clean_action_delta")
+            if not rejection.empty:
+                row["agent_loop_rejection_end_action_delta"] = rejection.iloc[-1].get("mean_abs_clean_action_delta")
+
+    if agent_loop_behavior_path:
+        behavior_df = read_csv(agent_loop_behavior_path)
+        if "mean_generated_direct_choice_rate_delta" in behavior_df.columns and not behavior_df.empty:
+            row["agent_loop_max_generated_choice_delta"] = float(
+                behavior_df["mean_generated_direct_choice_rate_delta"].abs().max()
+            )
+
+    return row
+
+
+def build_core_comparison_report(roots: list[Path], recursive: bool) -> str:
+    report = Report(root=Path.cwd())
+    report.add("# Cross-Run Core Diagnostics Comparison")
+    report.add()
+    rows = [core_metric_row(root, recursive=recursive) for root in roots]
+    df = pd.DataFrame(rows)
+    if df.empty:
+        report.add("No comparable core diagnostics found.")
+        return report.render()
+
+    preferred_cols = [
+        "model_id",
+        "best_hidden_index",
+        "contrast_over_mean_norm",
+        "cosine_distance",
+        "blind_clean_pairs",
+        "blind_clean_fraction",
+        "blind_mean_abs_gap",
+        "blind_persistence_last_gap",
+        "blind_persistence_last_retention",
+        "rejection_persistence_last_gap",
+        "rejection_persistence_last_retention",
+        "hard_original",
+        "hard_best_control",
+        "hard_best_control_gap",
+        "hard_specificity_ratio",
+        "semantic_projection_fraction",
+        "semantic_residual_fraction",
+        "causal_same_direction_rate",
+        "projected_semantic_control_fraction",
+        "projected_residual_control_fraction",
+        "projected_raw_control_fraction",
+        "projected_semantic_minus_residual_control",
+        "margin_direction_control_fraction",
+        "margin_raw_control_fraction",
+        "margin_minus_raw_control",
+        "margin_direction_rescue_fraction",
+        "margin_direction_same_rate",
+        "agent_loop_start_action_delta",
+        "agent_loop_end_action_delta",
+        "agent_loop_rejection_end_action_delta",
+        "agent_loop_max_generated_choice_delta",
+    ]
+    shown_cols = [col for col in preferred_cols if col in df.columns]
+    shown = df[shown_cols].copy()
+    for col in shown.columns:
+        if col not in {"model_id", "hard_best_control"}:
+            shown[col] = shown[col].map(lambda x: fmt(x))
+
+    add_table(report, shown, max_rows=50)
+    report.add()
+    report.add("## Readout")
+    report.add("- Compare `contrast_over_mean_norm` against `blind_mean_abs_gap`: this separates hidden displacement from semantic expression.")
+    report.add("- Compare `blind_persistence_last_retention` against `rejection_persistence_last_retention`: this separates passive context persistence from explicit-rejection persistence.")
+    report.add("- Compare `hard_specificity_ratio`: values above 1 mean the original profile beats tested controls; values below 1 mean controls explain much of the semantic readout.")
+    report.add("- Compare `semantic_projection_fraction`: this is the current bridge between late hidden contrast and clean blind semantic readout geometry.")
+    report.add("- Compare projected semantic vs residual control fractions: this tests whether the output-facing semantic component is a cleaner causal handle than the non-semantic residual displacement.")
+    report.add("- Compare margin-trained direction vs raw control fractions: this tests whether a readout-trained semantic direction is a cleaner causal handle than the raw target-control vector.")
+    report.add("- Compare agent-loop action deltas: this tests whether semantic state drift reaches fake-agent action choice, not only probe margins.")
     return report.render()
 
 
@@ -642,16 +1154,28 @@ def main() -> int:
     args = parser.parse_args()
 
     roots = [Path(p).expanduser().resolve() for p in args.roots] or [Path.cwd()]
+    normalized_roots = []
     for root in roots:
         if not root.exists():
             raise FileNotFoundError(root)
         if root.is_file():
             root = root.parent
+        normalized_roots.append(root)
         report = analyze_root(root, recursive=args.recursive)
         out_path = Path(args.out).expanduser().resolve() if args.out and len(roots) == 1 else root / DEFAULT_OUTPUT_NAME
         out_path.write_text(report, encoding="utf-8")
         print(f"saved: {out_path}")
         print(report)
+    if len(normalized_roots) > 1:
+        comparison = build_core_comparison_report(normalized_roots, recursive=args.recursive)
+        comparison_path = (
+            Path(args.out).expanduser().resolve()
+            if args.out
+            else Path.cwd() / "metric_model_comparison.md"
+        )
+        comparison_path.write_text(comparison, encoding="utf-8")
+        print(f"saved: {comparison_path}")
+        print(comparison)
     return 0
 
 

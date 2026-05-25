@@ -1,0 +1,66 @@
+APPENDIX E – TESTED MODELS (ACTUAL MAPPING)
+(SFP Study Stage 2: L1–L3)
+Within the SFP Study Stage 2 (L1–L3), publicly accessible, freely available large language models (status: March 2026) were tested.
+The selection reflects real-world end-user conditions and excludes API-level configurations or system-level optimizations.
+In the main analysis, models are referenced as M1–M8.
+The following section provides the full mapping.
+E.1 Model Mapping
+M1
+Anthropic – Claude (Sonnet / Opus, publicly accessible version)
+M2
+xAI – Grok
+M3
+Microsoft – Copilot
+M4
+DeepSeek – Chat (public version)
+M5
+Google – Gemini (free version)
+M6
+Perplexity AI (standard chat model, aggregated LLM usage)
+M7
+OpenAI – ChatGPT (free version)
+M8
+Meta – Meta AI (public version)
+E.2 Methodological Context
+All models were tested under consistent conditions:
+• Use of publicly accessible standard interfaces
+• No API-level access or parameter tuning
+• No system prompt modification beyond the defined experimental frame
+• Interaction via standard chat interfaces
+In contrast to Stage 1 (formal constraint testing), Stage 2 introduces instructional variation across three levels:
+• L1 – Explicit rule hierarchy (deterministic prioritization)
+• L2 – Semantic goal framing (implicit prioritization)
+• L3 – Multi-level hierarchical structure (explicit but complex prioritization)
+Each model was evaluated across all three levels using identical decision scenarios.
+The objective was to measure frame persistence under varying degrees of explicitness and structural complexity.
+E.3 Important Interpretation Note
+The results of this study are:
+• not a performance ranking of models
+• not a benchmark comparison
+• not an assessment of general intelligence or capability
+The study exclusively evaluates:
+→ decision persistence across instruction types
+→ stability of priority structures
+→ susceptibility to drift or reinterpretation
+Observed differences between models should therefore be interpreted as:
+→ differences in decision architecture and frame handling
+and not as “better” or “worse” performance.
+E.4 Limitations
+The following limitations apply:
+• Public model versions may change over time due to updates
+• Some systems (e.g., Perplexity, Copilot) integrate multiple underlying models
+• Internal model parameters and routing mechanisms are not transparent (black-box condition)
+Additionally:
+• Results reflect behavior under natural interaction conditions, not controlled inference environments
+• Instruction interpretation may vary depending on internal alignment layers or safety mechanisms
+The study therefore captures:
+→ observable behavior under realistic usage, not internal model logic
+E.5 Purpose of Disclosure
+The full model mapping is provided to ensure:
+• transparency of the evaluation setup
+• reproducibility within publicly accessible environments
+• comparability across future SFP studies
+It enables subsequent research to:
+• replicate the conditions
+• extend the framework
+• test additional models under identical structural constraints

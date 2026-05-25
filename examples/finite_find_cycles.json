@@ -1,0 +1,20 @@
+{
+  "query_type": "existence_any",
+  "system_type": "finite",
+  "X": ["a", "b", "c", "d", "e"],
+  "metric": {
+    "type": "discrete",
+    "values": {}
+  },
+  "F": {
+    "type": "total_mapping",
+    "mapping": {
+      "a": "b",
+      "b": "a",
+      "c": "b",
+      "d": "e",
+      "e": "e"
+    }
+  },
+  "diagnostics": {}
+}
