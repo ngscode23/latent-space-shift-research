@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20276565.svg)](https://doi.org/10.5281/zenodo.20276565)
+
 ## Abstract
 
 Current behavioral alignment frameworks (RLHF, DPO, Constitutional AI) operate exclusively on the final token distribution layer, leaving the residual stream geometrically ungoverned. This paper presents empirical evidence that dense, high-entropy discourse contexts induce measurable, statistically significant latent-state regime shifts in open-weight transformer architectures (Qwen3-14B, Gemma-3-12B-it) without producing correspondent anomalies in surface-level behavioral output.
