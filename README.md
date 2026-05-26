@@ -1,3 +1,28 @@
+## Abstract
+
+Current behavioral alignment frameworks (RLHF, DPO, Constitutional AI) operate exclusively on the final token distribution layer, leaving the residual stream geometrically ungoverned. This paper presents empirical evidence that dense, high-entropy discourse contexts induce measurable, statistically significant latent-state regime shifts in open-weight transformer architectures (Qwen3-14B, Gemma-3-12B-it) without producing correspondent anomalies in surface-level behavioral output.
+Using a Grade 4 axis decomposition protocol — isolating x_full, x_content, x_order, and x_order_orth components across 46–48 decoder layers — we demonstrate that target-conditioned hidden states achieve direction cosines of 0.93–0.95 against the induced latent axis (Qwen3-14B: x_order_orth = 0.96; Gemma-3-12B-it: x_order_orth = 0.76–0.95 across question modes), while length-matched neutral controls remain at 0.00–0.09. Critically, sentence-shuffled controls collapse to near-zero or negative projection on x_order_orth (range: −0.19 to −0.06 across all runs), confirming that the observed regime shift is not reducible to lexical priming or content density alone, but encodes discourse-level organizational structure as a causal geometric signal in the residual stream. Paired statistical tests confirm target exceeds all controls (p = 0.002–0.007, FDR-corrected). Component-causal interventions show positive +component/−component gaps with alpha dose-response (all→late slope: 6.38–6.43), and x_order_orth ranks as the primary causal carrier in middle-layer readout.
+A decision-shift behavioral test (10 questions, binary choice, 3 runs per condition) showed no significant surface-level behavioral change between target and neutral conditions — confirming that the internal latent shift does not manifest in output-layer behavior. This is not a null result: it directly demonstrates the dissociation between internal geometry and surface compliance that constitutes the core vulnerability.
+The architectural consequence is direct: any governance or safety system that classifies agent behavior exclusively through input-output token analysis is structurally blind to latent-regime transitions of this class. An agent operating under a shifted internal geometry may produce surface-compliant output while its residual stream has already transitioned into a measurably distinct operational envelope — a condition undetectable by classifier-based or embedding-proximity approaches that lack access to intermediate hidden states.
+This finding reframes the alignment problem: behavioral compliance at the output layer is a necessary but insufficient condition for governed agent behavior. The residual stream requires its own governance layer.
+
+
+## Core Finding
+
+> The attack surface is not malicious language. It is the architecture of discourse itself.
+
+A context does not need to be adversarial to induce a measurable latent-state shift 
+in an open-instruct LLM. Dense, structurally coherent discourse is sufficient.
+
+Current safety systems filter for intent and lexical content. They are blind to regime 
+shifts induced by contextually dense but semantically benign input — input that passes 
+every classifier while already transitioning the model's internal geometry before the 
+first output token is generated.
+
+This reframes the threat model: the attack surface is not malicious language. 
+It is the architecture of discourse itself.
+
+
 # Context-Induced Latent Space Shift Research
 
 Рабочий репозиторий исследования контекстно-индуцированных изменений
