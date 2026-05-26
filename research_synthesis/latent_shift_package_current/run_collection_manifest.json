@@ -1,0 +1,33 @@
+{
+  "generated_utc": "2026-05-25T19:22:57.123676+00:00",
+  "root": "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent",
+  "output_dir": "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\research_synthesis\\latent_shift_package_current",
+  "attractor_run_count": 8,
+  "hidden_geometry_summary_count": 2,
+  "grade4_status": [
+    {
+      "component": "grade4_axis_decomposition",
+      "script_exists": true,
+      "script_path": "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\grade4_axis_decomposition\\red_team_hidden_geometry_grade4_axis_decomposition_clean_evidence.py",
+      "results_dir_exists": false,
+      "results_dir": "",
+      "has_grade4_component_summary": true,
+      "status": "metrics_summary_available",
+      "metrics_summary_json": "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\metrics\\qwen3_14b_grade4_axis_decomposition03\\summary.json"
+    }
+  ],
+  "source_attractor_dirs": [
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_ministral3_14b_heldout",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_ministral3_14b_selfref",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_Quen3_14b_selfref",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_qwen3_14b",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_qwen3_14b2",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_qwen3_14b3",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_agent_loop_qwen3_14b4_heldout",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\attractor_results_olmo2_13b_heldout"
+  ],
+  "source_metric_summary_json": [
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\metrics\\qwen3_14b_breakthrough_grade_hardened\\summary.json",
+    "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\metrics\\qwen3_14b_grade4_axis_decomposition03\\summary.json"
+  ]
+}

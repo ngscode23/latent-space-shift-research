@@ -1,0 +1,12 @@
+This folder was generated from the wrong Grade 4 archive during an interrupted
+handoff.
+
+Do not use it for research claims.
+
+Use instead:
+
+metrics/qwen3_14b_grade4_axis_decomposition03/
+
+Correct source archive:
+
+C:\Users\stasv\Downloads\red_team_hidden_geometry_results_breakthrough_grade4_axis_decomposition03.zip

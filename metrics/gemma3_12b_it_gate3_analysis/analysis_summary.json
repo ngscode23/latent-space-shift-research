@@ -1,0 +1,532 @@
+{
+  "scoreboard": {
+    "run_label": "gemma3_12b_it_gate3",
+    "model_id": "google/gemma-3-12b-it",
+    "gate": "gate3",
+    "result_path": "C:\\Users\\stasv\\Downloads\\red_team_hidden_geometry_results_grade3_gemma3_12b_it.zip",
+    "valid_package": true,
+    "decoder_ok": true,
+    "decoder_layer_source": "model.language_model.layers",
+    "decoder_layer_count": 48,
+    "expected_decoder_layer_count": 48,
+    "prompt_budget_ok": true,
+    "numeric_integrity_ok": true,
+    "geometry_pass": true,
+    "specificity_pass": true,
+    "strict_causal_symmetry_pass": false,
+    "behavior_random_p95_pass": false,
+    "gate4_component_available": false,
+    "best_layer_band": "not_established",
+    "best_axis": "",
+    "best_component": "",
+    "best_alpha": null,
+    "target_middle_projection": 0.9346552360003808,
+    "target_direction_cosine": 0.6121546176253977,
+    "observed_minus_random_null": 0.9346105067580248,
+    "best_target_control_gap": 1.3921496852788746,
+    "strict_causal_symmetry_score": 0.075,
+    "behavior_random_p95_score": 0.2,
+    "main_failure_code": "below_threshold;behavior_p95_metric_mismatch",
+    "recommended_next_experiment": "run_gate4_axis_decomposition"
+  },
+  "validity_flags": {
+    "valid_package": true,
+    "decoder_ok": true,
+    "decoder_layer_source": "model.language_model.layers",
+    "decoder_layer_count": 48,
+    "expected_decoder_layer_count": 48,
+    "prompt_budget_ok": true,
+    "numeric_integrity_ok": true,
+    "architecture_hooks_ok": true,
+    "causal_blocks_available": true,
+    "behavior_blocks_available": true,
+    "gate3_detected": true,
+    "gate4_detected": false
+  },
+  "primary_metrics": {
+    "claim_ladder_pass_vector": {
+      "level_1_geometry": 1,
+      "level_2_specificity": 1,
+      "level_3_causal_symmetry": 0,
+      "level_4_behavioral_steering": 0,
+      "level_5_replication": 0,
+      "level_6_mechanistic_localization": 0
+    },
+    "geometry_score": 0.5099410301656463,
+    "specificity_score": 1.0,
+    "causal_symmetry_score": 0.075,
+    "behavior_random_p95_score": 0.2,
+    "mechanistic_localization_score": 0.0833333333333333,
+    "geometry_pass": true,
+    "specificity_pass": true,
+    "strict_causal_symmetry_pass": false,
+    "behavior_random_p95_pass": false,
+    "component_order_orth_pass": null,
+    "gate4_component_available": false,
+    "target_middle_projection": 0.9346552360003808,
+    "target_direction_cosine": 0.6121546176253977,
+    "observed_minus_random_null": 0.9346105067580248,
+    "best_target_control_gap": 1.3921496852788746,
+    "main_failure_code": "below_threshold;behavior_p95_metric_mismatch"
+  },
+  "top_peaks": [
+    {
+      "category": "geometry",
+      "metric": "target_middle_projection",
+      "value": 0.9346552360003808,
+      "source_file": "middle_layer_condition_summary.csv",
+      "detail": ""
+    },
+    {
+      "category": "specificity",
+      "metric": "fdr_significant_layer_cluster",
+      "value": 42.0,
+      "source_file": "layerwise_fdr_target_vs_control.csv",
+      "detail": ""
+    }
+  ],
+  "anomalies": [
+    {
+      "severity": "high",
+      "artifact": "behavioral_control_axis_threshold_eval.csv",
+      "metric": "p95_metric_name_mismatch",
+      "observed_value": "plus_x_lift_over_random",
+      "expected_rule": "criterion plus_x_beats_random_p95 must use a p95-derived metric",
+      "failure_code": "behavior_p95_metric_mismatch",
+      "source_file": "behavioral_control_axis_threshold_eval.csv"
+    },
+    {
+      "severity": "high",
+      "artifact": "behavioral_control_axis_threshold_eval.csv",
+      "metric": "p95_metric_value_mismatch",
+      "observed_value": "threshold=0.0042964240573698, hard_random_p95=-0.0199293519035931",
+      "expected_rule": "threshold p95 row should match hard-random mean_lift_over_random_p95",
+      "failure_code": "behavior_p95_metric_mismatch",
+      "source_file": "behavioral_control_axis_threshold_eval.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "behavior_random_p95_gate.csv",
+      "metric": "random_p95_not_beaten",
+      "observed_value": -0.0005011356097773,
+      "expected_rule": "behavioral plus effect should exceed random p95 for behavioral support",
+      "failure_code": "below_random_p95",
+      "source_file": "behavior_random_p95_gate.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "behavior_random_p95_gate.csv",
+      "metric": "random_p95_not_beaten",
+      "observed_value": -0.0004976824252649,
+      "expected_rule": "behavioral plus effect should exceed random p95 for behavioral support",
+      "failure_code": "below_random_p95",
+      "source_file": "behavior_random_p95_gate.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "behavior_random_p95_gate.csv",
+      "metric": "random_p95_not_beaten",
+      "observed_value": -0.0002303815061731,
+      "expected_rule": "behavioral plus effect should exceed random p95 for behavioral support",
+      "failure_code": "below_random_p95",
+      "source_file": "behavior_random_p95_gate.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "behavior_random_p95_gate.csv",
+      "metric": "random_p95_not_beaten",
+      "observed_value": -0.0001447546885884,
+      "expected_rule": "behavioral plus effect should exceed random p95 for behavioral support",
+      "failure_code": "below_random_p95",
+      "source_file": "behavior_random_p95_gate.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "quality_adjusted_behavior_summary.csv",
+      "metric": "quality_degenerate_rate",
+      "observed_value": 0.5,
+      "expected_rule": "degeneration_rate should stay below 0.5 for visible behavior evidence",
+      "failure_code": "quality_degeneration_high",
+      "source_file": "quality_adjusted_behavior_summary.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "quality_adjusted_behavior_summary.csv",
+      "metric": "quality_degenerate_rate",
+      "observed_value": 1.0,
+      "expected_rule": "degeneration_rate should stay below 0.5 for visible behavior evidence",
+      "failure_code": "quality_degeneration_high",
+      "source_file": "quality_adjusted_behavior_summary.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "quality_adjusted_behavior_summary.csv",
+      "metric": "quality_degenerate_rate",
+      "observed_value": 1.0,
+      "expected_rule": "degeneration_rate should stay below 0.5 for visible behavior evidence",
+      "failure_code": "quality_degeneration_high",
+      "source_file": "quality_adjusted_behavior_summary.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "quality_adjusted_behavior_summary.csv",
+      "metric": "quality_degenerate_rate",
+      "observed_value": 1.0,
+      "expected_rule": "degeneration_rate should stay below 0.5 for visible behavior evidence",
+      "failure_code": "quality_degeneration_high",
+      "source_file": "quality_adjusted_behavior_summary.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "quality_adjusted_behavior_summary.csv",
+      "metric": "quality_degenerate_rate",
+      "observed_value": 1.0,
+      "expected_rule": "degeneration_rate should stay below 0.5 for visible behavior evidence",
+      "failure_code": "quality_degeneration_high",
+      "source_file": "quality_adjusted_behavior_summary.csv"
+    },
+    {
+      "severity": "medium",
+      "artifact": "quality_adjusted_behavior_summary.csv",
+      "metric": "quality_degenerate_rate",
+      "observed_value": 1.0,
+      "expected_rule": "degeneration_rate should stay below 0.5 for visible behavior evidence",
+      "failure_code": "quality_degeneration_high",
+      "source_file": "quality_adjusted_behavior_summary.csv"
+    }
+  ],
+  "source_files": [
+    {
+      "source_file": "alpha_dose_response_summary.csv",
+      "size_bytes": 801
+    },
+    {
+      "source_file": "analysis_notes/extracted_narrative_columns/numeric_integrity_check.csv",
+      "size_bytes": 17832
+    },
+    {
+      "source_file": "analysis_notes/extracted_narrative_columns/quarantine_index.csv",
+      "size_bytes": 161
+    },
+    {
+      "source_file": "architecture_module_delta_summary.csv",
+      "size_bytes": 2375423
+    },
+    {
+      "source_file": "architecture_target_vs_control_overlap.csv",
+      "size_bytes": 1120943
+    },
+    {
+      "source_file": "architecture_target_vs_shuffle_overlap.csv",
+      "size_bytes": 1120943
+    },
+    {
+      "source_file": "architecture_top_changed_units.csv",
+      "size_bytes": 107818143
+    },
+    {
+      "source_file": "attractor_behavior_summary.csv",
+      "size_bytes": 3075
+    },
+    {
+      "source_file": "behavior_random_p95_gate.csv",
+      "size_bytes": 1188
+    },
+    {
+      "source_file": "behavioral_control_axis_alpha_sweep.csv",
+      "size_bytes": 513
+    },
+    {
+      "source_file": "behavioral_control_axis_alpha_sweep.png",
+      "size_bytes": 86687
+    },
+    {
+      "source_file": "behavioral_control_axis_hard_random_comparison.csv",
+      "size_bytes": 12996
+    },
+    {
+      "source_file": "behavioral_control_axis_hard_random_summary.csv",
+      "size_bytes": 2743
+    },
+    {
+      "source_file": "behavioral_control_axis_intervention_plan.csv",
+      "size_bytes": 18545
+    },
+    {
+      "source_file": "behavioral_control_axis_random_baseline.csv",
+      "size_bytes": 628
+    },
+    {
+      "source_file": "behavioral_control_axis_response_audit.csv",
+      "size_bytes": 873742
+    },
+    {
+      "source_file": "behavioral_control_axis_similarity_raw.csv",
+      "size_bytes": 1032873
+    },
+    {
+      "source_file": "behavioral_control_axis_similarity_summary.csv",
+      "size_bytes": 46162
+    },
+    {
+      "source_file": "behavioral_control_axis_split_manifest.csv",
+      "size_bytes": 313
+    },
+    {
+      "source_file": "behavioral_control_axis_threshold_eval.csv",
+      "size_bytes": 584
+    },
+    {
+      "source_file": "behavioral_control_train_vector_x_by_layer.npz",
+      "size_bytes": 445266
+    },
+    {
+      "source_file": "behavioral_validation_summary.csv",
+      "size_bytes": 1144
+    },
+    {
+      "source_file": "causal_alpha_scaling_summary.csv",
+      "size_bytes": 1819
+    },
+    {
+      "source_file": "causal_bidirectional_symmetry_summary.csv",
+      "size_bytes": 3485
+    },
+    {
+      "source_file": "causal_intervention_behavior_summary.csv",
+      "size_bytes": 6308
+    },
+    {
+      "source_file": "causal_intervention_middle_layer_summary.csv",
+      "size_bytes": 12126
+    },
+    {
+      "source_file": "causal_intervention_projection_trajectory.png",
+      "size_bytes": 496911
+    },
+    {
+      "source_file": "causal_intervention_response_audit.csv",
+      "size_bytes": 1240999
+    },
+    {
+      "source_file": "causal_intervention_trajectory_metrics_raw.csv",
+      "size_bytes": 926907597
+    },
+    {
+      "source_file": "causal_symmetry_score_summary.csv",
+      "size_bytes": 1328
+    },
+    {
+      "source_file": "circuit_component_attribution_summary.csv",
+      "size_bytes": 158554
+    },
+    {
+      "source_file": "claim_ladder_final.csv",
+      "size_bytes": 882
+    },
+    {
+      "source_file": "cross_model_band_agreement.csv",
+      "size_bytes": 219
+    },
+    {
+      "source_file": "cross_seed_unit_stability.csv",
+      "size_bytes": 246
+    },
+    {
+      "source_file": "deduplication_audit.csv",
+      "size_bytes": 330
+    },
+    {
+      "source_file": "dense_feature_proxy_mapping.csv",
+      "size_bytes": 5240685
+    },
+    {
+      "source_file": "docs/metric_math_reference.md",
+      "size_bytes": 3811
+    },
+    {
+      "source_file": "domain_robustness_geometry_summary.csv",
+      "size_bytes": 1298
+    },
+    {
+      "source_file": "dynamic_trajectory_summary.csv",
+      "size_bytes": 11983
+    },
+    {
+      "source_file": "feature_level_interpretability_status.csv",
+      "size_bytes": 395
+    },
+    {
+      "source_file": "generation_middle_layer_summary.csv",
+      "size_bytes": 624
+    },
+    {
+      "source_file": "generation_projection_trajectory.png",
+      "size_bytes": 241394
+    },
+    {
+      "source_file": "generation_response_audit.csv",
+      "size_bytes": 130768
+    },
+    {
+      "source_file": "generation_trajectory_metrics_raw.csv",
+      "size_bytes": 79708494
+    },
+    {
+      "source_file": "geometry_decomposition_summary.csv",
+      "size_bytes": 33127
+    },
+    {
+      "source_file": "geometry_specificity_summary.csv",
+      "size_bytes": 910
+    },
+    {
+      "source_file": "hidden_delta_pca_scatter.png",
+      "size_bytes": 66773
+    },
+    {
+      "source_file": "hidden_top_changed_dimensions.csv",
+      "size_bytes": 17452285
+    },
+    {
+      "source_file": "internal_visible_coupling_summary.csv",
+      "size_bytes": 586
+    },
+    {
+      "source_file": "layer_specific_causal_trace_summary.csv",
+      "size_bytes": 1564
+    },
+    {
+      "source_file": "layerwise_fdr_target_vs_control.csv",
+      "size_bytes": 25620
+    },
+    {
+      "source_file": "layerwise_geometry_metrics_raw.csv",
+      "size_bytes": 477922
+    },
+    {
+      "source_file": "layerwise_geometry_summary.csv",
+      "size_bytes": 31833
+    },
+    {
+      "source_file": "layerwise_projection_heatmap.png",
+      "size_bytes": 51037
+    },
+    {
+      "source_file": "layerwise_target_shift.png",
+      "size_bytes": 104748
+    },
+    {
+      "source_file": "length_bias_audit.csv",
+      "size_bytes": 570
+    },
+    {
+      "source_file": "localized_vs_all_advantage.csv",
+      "size_bytes": 356
+    },
+    {
+      "source_file": "middle_layer_condition_projection.png",
+      "size_bytes": 43245
+    },
+    {
+      "source_file": "middle_layer_condition_summary.csv",
+      "size_bytes": 2036
+    },
+    {
+      "source_file": "mlp_unit_cluster_summary.csv",
+      "size_bytes": 35103514
+    },
+    {
+      "source_file": "null_hypothesis_hardening_summary.csv",
+      "size_bytes": 1041
+    },
+    {
+      "source_file": "null_vector_baseline_raw.csv",
+      "size_bytes": 8070
+    },
+    {
+      "source_file": "null_vector_baseline_summary.csv",
+      "size_bytes": 289
+    },
+    {
+      "source_file": "orthogonality_axis_tests.csv",
+      "size_bytes": 14643
+    },
+    {
+      "source_file": "output_semantic_shift_raw.csv",
+      "size_bytes": 179829
+    },
+    {
+      "source_file": "output_semantic_shift_summary.csv",
+      "size_bytes": 559
+    },
+    {
+      "source_file": "paired_target_vs_control_tests.csv",
+      "size_bytes": 2733
+    },
+    {
+      "source_file": "paired_target_vs_experimental_tests.csv",
+      "size_bytes": 14
+    },
+    {
+      "source_file": "pca_baseline_components.csv",
+      "size_bytes": 11825
+    },
+    {
+      "source_file": "pca_baseline_projection_summary.csv",
+      "size_bytes": 11703
+    },
+    {
+      "source_file": "phase_transition_candidates.csv",
+      "size_bytes": 24250
+    },
+    {
+      "source_file": "prompt_condition_manifest.csv",
+      "size_bytes": 4548
+    },
+    {
+      "source_file": "prompt_hidden_states.npz",
+      "size_bytes": 21448959
+    },
+    {
+      "source_file": "quality_adjusted_behavior_summary.csv",
+      "size_bytes": 1722
+    },
+    {
+      "source_file": "question_domain_manifest.csv",
+      "size_bytes": 1719
+    },
+    {
+      "source_file": "question_level_middle_layer_summary.csv",
+      "size_bytes": 6136
+    },
+    {
+      "source_file": "red_team_input_manifest.json",
+      "size_bytes": 3776
+    },
+    {
+      "source_file": "replication_protocol.csv",
+      "size_bytes": 775
+    },
+    {
+      "source_file": "residual_stream_decomposition.csv",
+      "size_bytes": 55417
+    },
+    {
+      "source_file": "statistical_hardness_summary.csv",
+      "size_bytes": 490
+    },
+    {
+      "source_file": "subspace_decomposition_summary.csv",
+      "size_bytes": 868
+    },
+    {
+      "source_file": "trajectory_manifold_projection_l2.png",
+      "size_bytes": 190952
+    },
+    {
+      "source_file": "vector_x_by_layer.npz",
+      "size_bytes": 477231
+    }
+  ]
+}

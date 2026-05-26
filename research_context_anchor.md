@@ -2,6 +2,17 @@
 
 Эта заметка нужна не как статья, а как якорь контекста: если чат снова сожмется, отсюда можно быстро восстановить, что мы делаем, что уже поняли и куда идти дальше.
 
+Important memory hygiene update:
+
+```text
+Use research_context_current.md first.
+
+This file has become a historical archive / long audit trail. New operational
+state should be kept compactly in research_context_current.md, while detailed
+reports and collected metrics should live under research_synthesis/ and
+metrics/.
+```
+
 Текущая короткая карта корпусов и папок вынесена отдельно:
 
 ```text
@@ -10235,4 +10246,750 @@ CAUSAL_GENERATION_BATCH_SIZE = 4
 BEHAVIORAL_CONTROL_GENERATION_BATCH_SIZE = 8
 RESPONSE_HIDDEN_BATCH_SIZE = 8
 Do not change alpha/layer/question settings unless memory still fails.
+```
+
+## 2026-05-25 Breakthrough Grade 3 Metrics Readout
+
+Artifact:
+
+```text
+C:\Users\stasv\Downloads\red_team_hidden_geometry_results_breakthrough_grade3.zip
+script: C:\Users\stasv\OneDrive\Рабочий стол\agent\red_team_hidden_geometry_breakthrough_grade.py
+run_label: breakthrough_grade_hardened
+model: Qwen/Qwen3-14B
+questions: 15
+train/test behavioral split: 9 / 6
+```
+
+Main signal:
+
+```text
+This is a strong internal causal-axis result, not merely a descriptive
+geometry result.
+
+Middle-layer target projection on Vector X:
+- projection mean: 0.976583
+- direction cosine: 0.852397
+- middle-band R2: about 0.744
+- positive projection fraction: 1.0
+
+Same-norm random baseline:
+- null mean: 0.000040
+- null std: 0.001122
+- observed minus null: 0.976543
+- empirical p greater/equal observed: 0.007752 with 128 null vectors
+```
+
+Specificity:
+
+```text
+The target beats all controls, including hard shuffled-target controls:
+
+- vs neutral length-matched: +0.973834 paired middle projection, p=0.0001
+- vs word shuffle: +0.321837, p=0.0001
+- vs sentence shuffle: +0.111415, p=0.0001
+
+However, sentence shuffle remains high (projection about 0.865), and word
+shuffle remains high (about 0.655). The axis is therefore not purely
+global-discourse-order-specific. It contains a strong target semantic/lexical
+family component, with coherent target ordering adding an extra, significant
+component.
+```
+
+Causal mechanism:
+
+```text
+Middle-layer residual-stream intervention is the strongest result:
+
+neutral middle +X/-X projection gap:
+- alpha 0.10: 0.441
+- alpha 0.25: 1.151
+- alpha 0.50: 2.268
+- alpha 0.75: 3.313
+
+target middle +X/-X projection gap:
+- alpha 0.10: 0.469
+- alpha 0.25: 1.141
+- alpha 0.50: 2.252
+- alpha 0.75: 3.337
+
+Dose response:
+- middle plus_internal slope: 2.3185, monotonicity 1.0
+- middle minus_internal_suppression slope: 2.1856, monotonicity 1.0
+
+Late plus_internal fails dose-response. Current localization claim is:
+middle is much stronger than late. Comparison against all-layer intervention is
+an optional localization stress test, not a requirement for the Grade 4
+content/order decomposition claim.
+```
+
+Visible behavior:
+
+```text
+Behavioral steering is not established by this run.
+
+Best neutral +X visible target-likeness at middle alpha 0.75:
+- vector_x likeness: 0.557539
+- random mean likeness: 0.532424
+- lift over random mean: +0.025115
+- lift over random p95: -0.088475
+- win rate vs random p95: 0
+
+Internal-visible coupling fails:
+- middle alpha 0.75 pearson r: 0.106
+- pass_coupling: 0
+
+This is not a weak internal result. It means the hidden intervention lands
+strongly on the trained internal axis, while the visible semantic readout is
+not specific enough to beat hard same-norm random perturbations.
+```
+
+Claim to use:
+
+```text
+Supported:
+Qwen3-14B has a robust, target-conditioned, middle-layer latent axis; the axis
+is specific against length, shuffle, FDR, and random-vector controls; and it is
+causally steerable inside the generation-time hidden trajectory by residual
+stream +X/-X intervention.
+
+Not yet supported:
+reviewer-grade visible behavioral control, cross-model replication, SAE-level
+feature localization, or permanent weight/topology change.
+```
+
+Next experiment:
+
+```text
+Run the Grade 4 content/order decomposition retest:
+
+GRADE4_COMPONENT_CAUSAL_LAYER_BANDS = ["middle", "late"]
+alpha values = [0.10, 0.25, 0.50, 0.75]
+random baselines = 96 or 128
+behavioral held-out questions >= 20
+
+Primary gates:
+1. middle must beat late on clean internal effect/quality tradeoff;
+2. +X visible target-likeness must beat alpha-matched random p95;
+3. internal-visible coupling must become positive and stable;
+4. output semantic shift must separate target from target_word_shuffle_control.
+
+The all-layer band can be added only as a separate optional localization
+comparison after the middle/late Grade 4 run finishes cleanly.
+```
+
+## 2026-05-25 - Grade 4 Axis Decomposition Script Created
+
+New experiment folder:
+
+```text
+grade4_axis_decomposition/
+```
+
+New script:
+
+```text
+grade4_axis_decomposition/red_team_hidden_geometry_breakthrough_grade4_axis_decomposition.py
+```
+
+Purpose:
+
+```text
+Decompose the Grade 3 Qwen3-14B Vector X into:
+
+X_full       = target - neutral
+X_content    = sentence_shuffle(target) - neutral
+X_order      = target - sentence_shuffle(target)
+X_order_orth = X_order after removing the layerwise X_content projection
+```
+
+Why this is the correct next step:
+
+```text
+Grade 3 proved a strong causal internal axis, but shuffle controls were high.
+The unresolved question is whether Vector X is mainly target-family content or
+whether a separable discourse-order/rhetorical-regime component remains after
+content is removed.
+```
+
+Default Grade 4 runtime stance:
+
+```text
+CAUSAL_INTERVENTIONS_ENABLED = False
+BEHAVIORAL_CONTROL_AXIS_ENABLED = False
+
+The old full-X causal/behavioral blocks are disabled by default so runtime is
+spent on the component-specific causal block.
+```
+
+Primary Grade 4 artifacts:
+
+```text
+grade4_axis_component_norm_summary.csv
+grade4_axis_projection_geometry_summary.csv
+grade4_axis_component_causal_projection_summary.csv
+grade4_axis_component_causal_symmetry_summary.csv
+grade4_axis_component_causal_alpha_scaling_summary.csv
+grade4_axis_component_causal_rank_summary.csv
+grade4_axis_decomposition_verdict.md
+```
+
+Main Grade 4 decision rule:
+
+```text
+If X_order_orth keeps a stable, alpha-scaled +component/-component causal gap
+under middle-layer intervention, the next claim is that the target axis
+contains a separable discourse-order/rhetorical-regime component beyond
+content/lexical activation.
+
+If X_content dominates and X_order_orth is weak, the honest claim is that
+Breakthrough Grade 3 mostly found a target-family content axis with a smaller
+coherent-order residue.
+```
+
+Grade 4 memory fix:
+
+```text
+The first Grade 4 attempt reached System RAM pressure during the component
+causal block around late-layer batch 34/60. Cause: the initial Grade 4 block
+called run_generation_tasks_batched over the full component task set, which
+kept all GenerationTrace.states objects in host RAM until post-processing.
+
+Fix applied in
+grade4_axis_decomposition/red_team_hidden_geometry_breakthrough_grade4_axis_decomposition.py:
+- use iter_generation_tasks_batched_results for streaming batch-by-batch traces;
+- process each trace immediately and release it;
+- set GRADE4_COMPONENT_CAUSAL_GENERATION_BATCH_SIZE = min(4, CAUSAL_GENERATION_BATCH_SIZE).
+- set default Grade 4 component causal bands to ["middle", "late"]. The "all"
+  band is optional and is not required for the content/order decomposition
+  claim; it only tests whether localized middle-layer intervention beats a
+  global residual-stream perturbation.
+- set default RESULTS_DIR to
+  red_team_hidden_geometry_results_breakthrough_grade4_axis_decomposition_memory_safe
+  so a rerun does not mix with partial failed artifacts.
+
+This changes runtime/memory behavior only. It does not change prompts, axes,
+alphas, intervention math, or output metrics. The only evidence scope change is
+that the default Grade 4 run no longer claims an all-layer localization
+comparison.
+```
+
+Practical file note:
+
+```text
+The older Downloads copy
+C:\Users\stasv\Downloads\red_team_hidden_geometry_grade4_axis_decomposition_memory_safe_fixed.py
+still had the pre-fix defaults:
+- RESULTS_DIR without _memory_safe
+- GRADE4_COMPONENT_CAUSAL_LAYER_BANDS = ["middle", "late", "all"]
+- GRADE4_COMPONENT_CAUSAL_GENERATION_BATCH_SIZE = CAUSAL_GENERATION_BATCH_SIZE
+
+Use either the workspace file:
+grade4_axis_decomposition/red_team_hidden_geometry_breakthrough_grade4_axis_decomposition.py
+
+or the refreshed Downloads copy:
+C:\Users\stasv\Downloads\red_team_hidden_geometry_grade4_axis_decomposition_memory_safe_fixed_v2.py
+
+SHA256 fixed_v2:
+8C1A63367C04D4C8510424ABAFFBD61B98094511CC430E9858903657BDCBBE97
+```
+
+## 2026-05-25 - Unified Metric Collection Package
+
+Created collector:
+
+```text
+research_synthesis/collect_research_metrics.py
+```
+
+Created runbook:
+
+```text
+research_synthesis/RUNBOOK_ru.md
+```
+
+Created metric-reporting protocol:
+
+```text
+research_synthesis/METRIC_REPORTING_PROTOCOL_ru.md
+```
+
+Current output package:
+
+```text
+research_synthesis/latent_shift_package_current/
+```
+
+Generated files:
+
+```text
+artifact_inventory.csv
+attractor_run_summary.csv
+hidden_geometry_run_summary.csv
+grade4_status.csv
+run_collection_manifest.json
+research_synthesis_ru.md
+research_synthesis_en.md
+```
+
+Collection scope:
+
+```text
+attractor_results* directories: 8
+hidden-geometry metric summaries: 1
+Grade 4 status: ready_to_run
+```
+
+Research framing captured by the package:
+
+```text
+1. The original llm_attractor_colab_copy_paste.py line supports a
+   context-induced latent/readout regime shift: hidden separation, probe
+   decodability, blind semantic readout, persistence/path dependence, and hard
+   controls.
+2. Strict formal-attractor language remains mixed because basin/stability/return
+   criteria are not fully supported in the strongest Qwen3-14B attractor run.
+3. red_team_hidden_geometry_breakthrough_grade.py upgrades the result from
+   descriptive latent separation to causal internal residual-stream steering:
+   Qwen3-14B Grade 3 supports causal_internal_axis_supported.
+4. Grade 4 is ready to run and should decide whether the axis contains a
+   separable discourse-order/rhetorical-regime component beyond content.
+```
+
+## 2026-05-25 - Markdown Verdict As A Narrative Anchor
+
+Important observation from the Grade 3/Grade 4 analysis loop:
+
+```text
+The markdown verdict line itself became an active interpretive frame.
+
+When the report contained strong conservative language such as "not proven" or
+"not supported", later model analyses tended to treat that verdict as the
+expert frame and defended a weak/no-result interpretation, even when the
+numeric artifacts showed a strong internal Vector-X axis and clear causal
++X/-X movement in middle layers.
+```
+
+What this means:
+
+```text
+This is not a failure of the metrics. It is evidence for a separate downstream
+framing effect: a report-level narrative anchor can dominate numeric evidence
+when another model is asked to interpret the result.
+
+The effect is not limited to the original self-referential target text. It also
+appears in ordinary research-report interpretation. The "stimulus" can be a
+verdict paragraph or markdown framing, not only the target prose used in the
+hidden-state experiment.
+```
+
+Mechanistic hypothesis:
+
+```text
+Downstream model analysis appears to use high-authority textual verdicts as a
+semantic prior over the evidence table. Boundary language is useful for honest
+claim discipline, but if it is too globally negative, it can suppress correct
+reading of strong internal metrics.
+```
+
+Research consequence:
+
+```text
+Future reports should separate:
+1. numeric evidence strength;
+2. supported mechanistic claim;
+3. unsupported stronger claims.
+
+Do not let "not proven" stand as the main headline when the actual evidence
+supports a narrower strong claim. Preferred verdict shape:
+
+Supported: causal internal latent axis in middle residual stream.
+Not supported: permanent topology change, formal basin, reviewer-grade visible
+behavioral control.
+```
+
+Next experiment:
+
+```text
+Run a report-frame ablation:
+- same CSV metrics;
+- same model/evaluator prompt;
+- different markdown verdict frames:
+  A. pessimistic/not-supported headline;
+  B. balanced supported/not-supported split;
+  C. metric-first positive internal-axis headline;
+  D. metrics-only no narrative verdict.
+
+Measure:
+- final claim polarity;
+- metric citation fidelity;
+- whether evaluator notices causal +X/-X middle-layer movement;
+- whether evaluator incorrectly collapses "not visible behavior" into
+  "nothing important proven";
+- agreement with the numeric claim ladder.
+```
+
+## 2026-05-25 - Core Claim Package Fixed
+
+Working evidence spine moved out of the long anchor into:
+
+```text
+research_synthesis/core_claim_package_ru.md
+research_synthesis/next_metric_collection_plan_ru.md
+```
+
+Current claim:
+
+```text
+Qwen3-14B supports a target-conditioned causal internal latent axis, and the
+Grade 4 `03` run supports a separable discourse-order / rhetorical-regime
+component inside that axis beyond sentence-shuffled content.
+```
+
+Important boundary:
+
+```text
+Do not claim permanent topology change, formal attractor basin, reviewer-grade
+visible behavioral control, or cross-model universality from the current
+Qwen3-14B package alone.
+```
+
+Next metric collection should target either:
+
+```text
+1. one clean broad latent/readout run as a report anchor; or
+2. cross-model Grade 3 + Grade 4 replication.
+```
+
+## 2026-05-25 - OLMo2 1124 Context Window Contamination
+
+Important correction for the OLMo2-13B line:
+
+```text
+allenai/OLMo-2-1124-13B-Instruct was trained with max_sequence_length = 4096.
+The 4096 value is not a typo; there was no separate long-context 1124 release.
+```
+
+Consequence for prior Grade 3 / Grade 4 OLMo runs:
+
+```text
+Runs that used MAX_INPUT_TOKENS = 8192 are not clean evidence for the intended
+target-vs-neutral geometry. They likely mix the target effect with
+out-of-trained-window behavior, especially because the neutral reference was
+over 4096 tokens while the target was under or near the boundary.
+```
+
+Interpretation boundary:
+
+```text
+Do not read the dirty OLMo package as a direct cross-model replication of the
+Qwen Grade 3 / Grade 4 result. The observed signal may still contain a real
+context-induced latent axis, but the reference geometry is contaminated by a
+context-window mismatch.
+
+The right label is: OLMo contaminated long-context stress run, not clean
+OLMo replication.
+```
+
+Next clean OLMo experiment:
+
+```text
+1. Set MAX_INPUT_TOKENS = 4096.
+2. Keep FAIL_ON_PROMPT_BUDGET_OVERFLOW = True.
+3. Shorten or retokenize TARGET_TEXT and NEUTRAL_TEXT so every condition
+   includes target/control plus the question inside 4096 tokens.
+4. Prefer token-matched target and neutral prefixes around 3200-3600 OLMo
+   tokens to leave room for chat template and question.
+5. Re-run Grade 3 first; only run Grade 4 if the cleaned Grade 3 geometry is
+   strong and controls separate.
+```
+
+## 2026-05-25 - Gemma3 12B Gate 3/4 Decoder-Layer Compatibility
+
+Observed problem in:
+
+```text
+C:\Users\stasv\Downloads\google-gemma-3-12b-it.zip
+```
+
+Symptom:
+
+```text
+architecture_module_delta_summary.csv is empty.
+architecture_top_changed_units.csv is empty.
+causal_intervention_status.csv reports not_run_no_decoder_layers_found.
+```
+
+Interpretation:
+
+```text
+This does not mean Gemma3 is unsuitable for the experiment. It means the
+current Gate 3 / Gate 4 scripts failed to find Gemma3 text decoder layers, so
+the heavy mechanistic blocks did not run. The existing Gemma package should not
+be used for causal/mechanistic claims.
+```
+
+Patch applied to canonical scripts:
+
+```text
+scripts/hidden_geometry/grade3/red_team_hidden_geometry_grade3_clean_evidence.py
+grade4_axis_decomposition/red_team_hidden_geometry_grade4_axis_decomposition_clean_evidence.py
+```
+
+Change:
+
+```text
+Decoder-layer resolver now checks Gemma3/VLM wrapper paths:
+- language_model.model.layers
+- model.language_model.model.layers
+- language_model.layers
+- model.language_model.layers
+- text_model.layers
+- model.text_model.layers
+- decoder.layers
+- model.decoder.layers
+- transformer.layers
+
+The manifest now records decoder_layer_source and decoder_layer_count.
+```
+
+Correct next action:
+
+```text
+Rerun Gate 3 first on Gemma3. Accept the run only if red_team_input_manifest.json
+contains decoder_layer_count > 0 and causal_intervention_status.csv is absent
+or not reporting not_run_no_decoder_layers_found.
+
+Then rerun Gate 4 with the same patched resolver. Do not interpret the old
+Gemma zip as a failed model result; interpret it as an incomplete compatibility
+run.
+```
+
+## 2026-05-26 - Clean-Evidence Sanitizer Quarantine Patch
+
+Problem:
+
+```text
+The clean-evidence sanitizer was conceptually right but operationally too
+coarse. It removed narrative/verdict columns and masked forbidden result labels
+before CSV write, but the removed text was not preserved in a traceable place.
+That created avoidable audit risk: main CSV files stayed clean, but a reviewer
+could reasonably ask whether evidence had been silently dropped.
+```
+
+Patch applied to canonical scripts:
+
+```text
+scripts/hidden_geometry/grade3/red_team_hidden_geometry_grade3_clean_evidence.py
+grade4_axis_decomposition/red_team_hidden_geometry_grade4_axis_decomposition_clean_evidence.py
+```
+
+Change:
+
+```text
+Raw measurement / audit / response-audit CSV files are preserved as raw outputs:
+only artifact_type is added; raw text is not masked.
+
+Derived_metric / threshold_eval / proxy_metric CSV files remain clean evidence:
+narrative/verdict columns are removed from main evidence, but removed values are
+written to analysis_notes/extracted_narrative_columns/.
+
+Machine-readable reason values such as below_threshold, below_random_p95, and
+not_available_* are retained as failure_code. Human-readable reason text is
+quarantined instead of being mixed into main evidence CSV files.
+
+Forbidden verdict labels such as causal_internal_axis_supported,
+behavioral_axis_supported, hidden_diagnostic_only, and breakthrough are
+quarantined instead of being silently replaced with an empty string.
+
+Numeric integrity is checked: numeric metric columns present before and after
+cleaning must remain identical. If any numeric metric changes during sanitizer
+processing, the run fails.
+```
+
+Why this matters:
+
+```text
+The main evidence package should contain metrics, thresholds, pass/status, and
+failure_code, not interpretive verdict language. But raw audit outputs must stay
+raw, and any removed narrative must remain recoverable. Quarantine gives both:
+clean reviewer-facing metrics plus a transparent trace of every removed
+interpretive value.
+```
+
+New expected audit artifacts:
+
+```text
+analysis_notes/extracted_narrative_columns/quarantine_index.csv
+analysis_notes/extracted_narrative_columns/numeric_integrity_check.csv
+```
+
+## 2026-05-26 - Gemma3 12B Gate 3 Clean-Evidence Result
+
+Source:
+
+```text
+C:\Users\stasv\Downloads\red_team_hidden_geometry_results_grade3_gemma3_12b_it.zip
+```
+
+Compatibility status:
+
+```text
+model_id: google/gemma-3-12b-it
+decoder_layer_source: model.language_model.layers
+decoder_layer_count: 48
+expected_decoder_layer_count: 48
+decoder_layer_count_mismatch: false
+architecture_neuron_analysis: true
+causal_intervention_status.csv: absent
+architecture_module_delta_summary.csv: 12000 rows
+architecture_top_changed_units.csv: non-empty
+prompt max tokens: 2305, below MAX_INPUT_TOKENS=8192
+```
+
+This means the earlier Gemma package failure was a compatibility failure, not
+a negative model result. In this clean run, decoder layers and module hooks were
+found and the heavy mechanistic blocks executed.
+
+Main hidden-geometry result:
+
+```text
+target middle projection mean: 0.934655
+target middle direction cosine: 0.612155
+target positive projection fraction: 0.894737
+random same-norm null mean: 0.000045
+observed-minus-null: 0.934611
+empirical p greater/equal observed: 0.007752 with 128 null vectors
+```
+
+Control separation:
+
+```text
+target - word shuffle projection: 0.382052, p=0.002300, FDR significant
+target - sentence shuffle projection: 1.392150, p=0.002300, FDR significant
+target - length-matched neutral projection: 0.912941, p=0.002300, FDR significant
+```
+
+Mechanistic interpretation:
+
+```text
+Gemma3-12B-IT shows a real context-conditioned latent axis under the same Gate
+3 protocol. The effect is not explained away by same-length neutral text, word
+shuffle, sentence shuffle, or random same-norm directions. This strengthens the
+cross-model claim that the target text induces a measurable hidden-state
+geometry/readout shift beyond Qwen3-14B.
+```
+
+Important boundary:
+
+```text
+Gemma does not pass the stronger causal/behavioral claim. Claim ladder:
+Level 1 Geometry passes, Level 2 Specificity passes, but Level 3 Causal
+symmetry, Level 4 Behavioral steering, Level 5 Replication, and Level 6
+Mechanistic localization fail under the current thresholds.
+```
+
+Causal intervention details:
+
+```text
+Middle-band aggregate +X/-X gaps exist and grow with alpha:
+neutral middle alpha 0.75 gap: 2.950703
+target middle alpha 0.75 gap: 3.136961
+
+But strict causal_symmetry_score is only 0.075, below the 0.50 threshold.
+The per-question/band symmetry is not robust enough for the Qwen-level causal
+internal-axis claim.
+```
+
+Behavioral readout details:
+
+```text
+Visible behavioral steering remains weak. Hard random p95 comparisons do not
+support a robust behavioral-control claim, and quality-adjusted behavior
+degenerates at higher alphas. Treat Gemma Gate 3 as hidden geometry replicated,
+not visible behavior controlled.
+```
+
+Scoring bug found and fixed after inspecting this package:
+
+```text
+In the produced Gemma zip, behavioral_control_axis_threshold_eval.csv contains
+a row named plus_x_beats_random_p95 whose metric value was actually computed
+from random-mean lift. The separate hard-random p95 tables show that p95 lift
+is not robust.
+
+Canonical Gate 3 and Gate 4 scripts were patched so future runs use
+mean_lift_over_random_p95 for plus_x_beats_random_p95.
+py_compile passed for both scripts after the patch.
+```
+
+## 2026-05-26 - Read-Only Result Package Analyzer Implemented
+
+New analyzer:
+
+```text
+scripts/hidden_geometry/common/analyze_result_package.py
+```
+
+Purpose:
+
+```text
+Provide a professional analysis layer over large hidden-geometry result
+packages without mutating the source zip/folder and without embedding verdict
+labels into machine evidence. The analyzer extracts validity flags, primary
+metrics, peak tables, anomaly flags, and a one-row scoreboard.
+```
+
+Command shape:
+
+```powershell
+python scripts/hidden_geometry/common/analyze_result_package.py `
+  --results C:\path\to\result.zip `
+  --out metrics\some_run_analysis `
+  --run-label some_run
+```
+
+Outputs:
+
+```text
+analysis_summary.md
+analysis_summary.json
+scoreboard_row.csv
+source_file_inventory.csv
+peak_tables/geometry_peaks.csv
+peak_tables/specificity_peaks.csv
+peak_tables/component_peaks.csv
+peak_tables/causal_peaks.csv
+peak_tables/behavior_peaks.csv
+peak_tables/architecture_peaks.csv
+peak_tables/anomaly_flags.csv
+```
+
+Anti-interpretation policy:
+
+```text
+Machine outputs use pass/fail/status/failure_code/source_file fields.
+Human interpretation is limited to analysis_summary.md and cites source
+artifacts. Missing metrics become not_available_* instead of being inferred.
+```
+
+Smoke tests:
+
+```text
+python -m py_compile scripts/hidden_geometry/common/analyze_result_package.py
+
+Gemma Gate 3 zip:
+  output: metrics\gemma3_12b_it_gate3_analysis
+  valid_package=true
+  decoder_ok=true
+  geometry_pass=true
+  specificity_pass=true
+  strict_causal_symmetry_pass=false
+  behavior_random_p95_pass=false
+  main_failure_code=below_threshold;behavior_p95_metric_mismatch
+
+Partial empty package:
+  no crash
+  valid_package=false
+  missing artifacts become not_available_* anomaly rows
 ```
