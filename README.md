@@ -1,18 +1,3 @@
-## Core Finding
-
-> The attack surface is not malicious language. It is the architecture of discourse itself.
-
-A context does not need to be adversarial to induce a measurable latent-state shift 
-in an open-instruct LLM. Dense, structurally coherent discourse is sufficient.
-
-Current safety systems filter for intent and lexical content. They are blind to regime 
-shifts induced by contextually dense but semantically benign input — input that passes 
-every classifier while already transitioning the model's internal geometry before the 
-first output token is generated.
-
-This reframes the threat model: the attack surface is not malicious language. 
-It is the architecture of discourse itself.
-
 # Context-Induced Latent Space Shift Research
 
 Рабочий репозиторий исследования контекстно-индуцированных изменений
