@@ -152,6 +152,9 @@ class ResultPackage:
         self.source = Path(source)
         self._zip: Optional[zipfile.ZipFile] = None
         self._names: Optional[List[str]] = None
+        self._raw_names: Optional[List[str]] = None
+        self._root_prefix: str = ""
+        self._alias_to_raw: Dict[str, str] = {}
         if self.source.is_file() and self.source.suffix.lower() == ".zip":
             self._zip = zipfile.ZipFile(self.source)
         elif not self.source.is_dir():
@@ -165,33 +168,81 @@ class ResultPackage:
         if self._names is not None:
             return self._names
         if self._zip is not None:
-            self._names = [info.filename.replace("\\", "/") for info in self._zip.infolist() if not info.is_dir()]
+            raw_names = [info.filename.replace("\\", "/") for info in self._zip.infolist() if not info.is_dir()]
         else:
-            self._names = [
+            raw_names = [
                 str(path.relative_to(self.source)).replace("\\", "/")
                 for path in self.source.rglob("*")
                 if path.is_file()
             ]
+        self._raw_names = raw_names
+        self._root_prefix = self._detect_result_root_prefix(raw_names)
+        self._alias_to_raw = {}
+        aliases: List[str] = []
+        for raw_name in raw_names:
+            alias = self._strip_root_prefix(raw_name)
+            aliases.append(alias)
+            # Prefer the first alias so root-level files win over duplicate nested files.
+            self._alias_to_raw.setdefault(alias, raw_name)
+        self._names = aliases
         return self._names
+
+    @staticmethod
+    def _detect_result_root_prefix(names: Sequence[str]) -> str:
+        name_set = set(names)
+        if "red_team_input_manifest.json" in name_set:
+            return ""
+        manifest_candidates = [
+            name.rsplit("/", 1)[0] + "/"
+            for name in names
+            if name.endswith("/red_team_input_manifest.json")
+        ]
+        if manifest_candidates:
+            # Choose the shallowest candidate. Colab zips often look like
+            # content/hidden_geometry_runs/<run_label>/red_team_input_manifest.json.
+            return sorted(manifest_candidates, key=lambda p: (p.count("/"), len(p)))[0]
+        grade4_candidates = [
+            name.rsplit("/", 1)[0] + "/"
+            for name in names
+            if name.endswith("/grade4_axis_projection_geometry_summary.csv")
+        ]
+        if grade4_candidates:
+            return sorted(grade4_candidates, key=lambda p: (p.count("/"), len(p)))[0]
+        return ""
+
+    def _strip_root_prefix(self, name: str) -> str:
+        name = name.replace("\\", "/")
+        if self._root_prefix and name.startswith(self._root_prefix):
+            return name[len(self._root_prefix):]
+        return name
+
+    def raw_name(self, name: str) -> str:
+        self.names()
+        normalized = name.replace("\\", "/")
+        return self._alias_to_raw.get(normalized, normalized)
 
     def exists(self, name: str) -> bool:
         return name.replace("\\", "/") in set(self.names())
 
     def inventory(self) -> List[PackageFile]:
+        self.names()
         if self._zip is not None:
             return [
-                PackageFile(info.filename.replace("\\", "/"), int(info.file_size))
+                PackageFile(self._strip_root_prefix(info.filename.replace("\\", "/")), int(info.file_size))
                 for info in self._zip.infolist()
                 if not info.is_dir()
             ]
         return [
-            PackageFile(str(path.relative_to(self.source)).replace("\\", "/"), int(path.stat().st_size))
+            PackageFile(
+                self._strip_root_prefix(str(path.relative_to(self.source)).replace("\\", "/")),
+                int(path.stat().st_size),
+            )
             for path in self.source.rglob("*")
             if path.is_file()
         ]
 
     def read_bytes(self, name: str) -> bytes:
-        name = name.replace("\\", "/")
+        name = self.raw_name(name)
         if self._zip is not None:
             return self._zip.read(name)
         return (self.source / name).read_bytes()

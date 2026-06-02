@@ -6,11 +6,15 @@ res/
 *.csv
 *.png
 *.log
+*.zip
 run_metadata.json
 summary_report.txt
 steering_outputs.json
 steering_outputs.csv
 attractor_results*/
+analysis_outputs/
+content/
+metrics/
 
 # Model/checkpoint/cache artifacts
 *.pt
@@ -19,6 +23,7 @@ attractor_results*/
 *.safetensors
 *.gguf
 *.onnx
+*.npz
 
 # Local environment / editor files
 .env
@@ -28,3 +33,25 @@ venv/
 
 # Accidental scratch files
 9
+
+# Private / sensitive research worktrees
+steering/
+model_workspaces/qwen3_5_9b_qwen_scope/steering/
+
+# Full metric packages / raw extracted result archives
+grade4_axis_decomposition/metrics/*
+!grade4_axis_decomposition/metrics/.gitkeep
+!grade4_axis_decomposition/metrics/README.md
+research_synthesis/gemma3_grade4_sae_academic_readout/metrics/*
+!research_synthesis/gemma3_grade4_sae_academic_readout/metrics/README.md
+
+# Extracted paper text / local scratch research source dumps
+research_synthesis/pdf_extracted_text/
+research_synthesis/pdf_text_extracts/
+
+# Local logs and extracted paper scratch text
+log_gpt.txt
+tmp_2606_02309_text.txt
+
+# Private outreach drafts
+research_synthesis/geometry_coordinate_evidence_package/maksym_lab_intro_with_strongest_metrics_en.md

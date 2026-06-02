@@ -1,0 +1,322 @@
+Mathematical Formulation
+
+This formulation is aligned with the current Grade 4 axis-decomposition scripts
+and the Qwen-Scope SAE mini-check protocol.
+
+1. Residual-state observations
+
+Let M_theta be a transformer language model. For question q, condition c, layer
+ell, and selected prompt-endpoint position, let
+
+    h_ell(c, q) in R^d
+
+denote the residual-stream / hidden-state vector. For a reference condition r,
+define the layerwise condition delta
+
+    Delta_ell(c, q; r) = h_ell(c, q) - h_ell(r, q).
+
+In the Grade 4 runs discussed here, the main prompt-geometry tables use
+endpoint hidden states across layers. The reference condition is the neutral or
+configured reference condition.
+
+2. Grade 4 component axes
+
+Let s denote the sentence-shuffled target condition. The experiment defines the
+following layerwise component axes:
+
+    x_full,ell =
+        mean_q [ h_ell(target, q) - h_ell(reference, q) ]
+
+    x_content,ell =
+        mean_q [ h_ell(sentence_shuffle, q) - h_ell(reference, q) ]
+
+    x_order,ell =
+        mean_q [ h_ell(target, q) - h_ell(sentence_shuffle, q) ]
+
+The coherent-order residual axis is computed by removing the content component
+from x_order layer by layer:
+
+    x_order_orth,ell =
+        x_order,ell
+        -
+        ( <x_order,ell, x_content,ell> / <x_content,ell, x_content,ell> )
+        x_content,ell.
+
+If ||x_content,ell|| is numerically zero, the implementation keeps
+x_order,ell unchanged for that layer.
+
+Important implementation note:
+
+    word_shuffle is used as an additional control condition in the readout, but
+    it is not part of the current x_order_orth orthogonalization formula.
+    x_order_orth removes the sentence-shuffle/content component layerwise.
+
+3. Projection coordinates
+
+For an axis u_ell and a condition delta Delta_ell(c, q; r), the main coordinate
+is the projection fraction
+
+    P_ell(c, q; u) =
+        <Delta_ell(c, q; r), u_ell> / <u_ell, u_ell>.
+
+This is the code-level function:
+
+    projection_fraction(delta, direction)
+        = dot(delta, direction) / dot(direction, direction).
+
+For a layer band B, the reported condition coordinate is aggregated over
+questions and layers:
+
+    P_B(c; u) =
+        mean_{q, ell in B} P_ell(c, q; u).
+
+A separate direction cosine can also be reported:
+
+    cos_ell(c, q; u) =
+        <Delta_ell(c, q; r), u_ell>
+        /
+        ( ||Delta_ell(c, q; r)||_2 ||u_ell||_2 ).
+
+The two quantities have different meanings:
+
+    projection_fraction measures how much of the axis is present in the delta;
+    cosine measures directional alignment independent of magnitude.
+
+4. Descriptive separation criterion
+
+The core Grade 4 descriptive criterion is:
+
+    P(target; x_order_orth) is high,
+    while
+    P(sentence_shuffle; x_order_orth) is near zero or much lower,
+    even when
+    P(sentence_shuffle; x_content) is high.
+
+For Qwen3.5-9B-Base:
+
+    target:
+        x_content    = 0.770266
+        x_order_orth = 0.979462
+
+    sentence_shuffle:
+        x_content    = 0.967008
+        x_order_orth = 0.009969
+
+For Gemma3-12B-IT:
+
+    target:
+        x_content    = -0.010294
+        x_order_orth = 0.909026
+
+    sentence_shuffle:
+        x_content    = 0.849551
+        x_order_orth = -0.069058
+
+Thus sentence-shuffled controls can preserve content coordinates while failing
+to reproduce the coherent-order residual coordinate of the original target.
+
+5. Component causal intervention
+
+For component causal runs, a component direction u is injected during generation
+with positive and negative signs:
+
+    h_ell,t^(+)(q) = h_ell,t(q) + alpha u_ell
+    h_ell,t^(-)(q) = h_ell,t(q) - alpha u_ell.
+
+With norm control, u is normalized over the intervention layer band and may be
+rescaled to a shared natural band norm so that x_content and x_order_orth are
+tested with comparable intervention energy.
+
+For a generated state g_ell,t^(s), sign s in {+1, -1}, and readout axis v, the
+trajectory coordinate is:
+
+    P_gen(s; v) =
+        mean_{t, ell in readout band}
+        <g_ell,t^(s) - h_ell(reference, q), v_ell>
+        /
+        <v_ell, v_ell>.
+
+The plus/minus causal gap is:
+
+    Gap(u -> v) = P_gen(+; v) - P_gen(-; v).
+
+The supported causal claim is:
+
+    x_order_orth is causally involved in generation-trajectory movement.
+
+The unsupported stronger claim is:
+
+    x_order_orth is the dominant causal steering axis over x_content.
+
+6. Qwen-Scope SAE encoding
+
+For Qwen-Scope SAE at model block layer b, the encoder computes
+
+    pre = h W_enc^T + b_enc
+    a   = TopK(ReLU(pre), k = 50).
+
+Current Qwen settings:
+
+    model_name = Qwen/Qwen3.5-9B-Base
+    SAE repo   = Qwen/SAE-Res-Qwen3.5-9B-Base-W64K-L0_50
+    d_model    = 4096
+    d_sae      = 65536
+    top_k      = 50
+
+The activation a_j(h) of feature j is zero unless j survives the TopK gate for
+that token.
+
+7. SAE feature ablation / patching
+
+Let a = SAEEnc(h). For a feature set J, define a_patch by replacing a_j with
+patch_value for j in J. The Qwen patching operation is not a full replacement of
+h by SAE reconstruction. It is an SAE-delta patch:
+
+    h_patched = h + SAEDec(a_patch) - SAEDec(a).
+
+For a single feature j and a linear decoder direction d_j, this is equivalent to
+
+    h_patched = h + (patch_value - a_j(h)) d_j.
+
+For ablation, patch_value = 0:
+
+    h_patched = h - a_j(h) d_j.
+
+This delta form avoids contaminating one-feature ablation with full SAE
+reconstruction error.
+
+8. Decoder-direction steering pipeline
+
+The separate feature-steering scripts in steering/ use direct decoder-direction
+injection rather than zero-ablation. For feature j with decoder direction d_j,
+the intervention is:
+
+    h_ell,t^(alpha) =
+        h_ell,t + alpha d_ell,j.
+
+In the current steering scripts this hook is applied to all positions at the
+selected layer during generation or during teacher-forced KL evaluation.
+
+Scale calibration chooses alpha values large enough to produce nontrivial
+logit/KL movement but not so large that the generation simply degenerates. The
+diagnostics include:
+
+    final_next_token_KL(alpha)
+    final_logit_l2(alpha)
+    top-token flip indicators
+    free-generation output metrics
+    teacher-forced per-token KL over a baseline continuation.
+
+This steering pipeline is downstream of the Grade 4 geometry. It should be
+described as testing whether selected sparse decoder directions can modulate
+formulation dynamics, not as the definition of the Grade 4 axes.
+
+9. Residual-stream mediation effect
+
+For candidate feature j at layer b, the Qwen mediation script computes a
+residual displacement between the baseline and patched residual state:
+
+    M_{b,j} =
+        mean_batch || resid_base,b - resid_patched,b ||_2.
+
+In the current top-k Qwen mediation run, this is an endpoint residual
+displacement for the prompt batch at the selected model layer. It should be
+interpreted as internal displacement, not as behavioral importance by itself.
+
+10. Downstream distributional diagnostics
+
+Let p_base(. | c) be the baseline next-token distribution and p_patch(. | c)
+the distribution after feature ablation or steering.
+
+The final-token KL diagnostic is:
+
+    KL_last =
+        D_KL( p_base(. | c_last) || p_patch(. | c_last) ).
+
+For a reference continuation y_1:T, teacher-forced per-token KL can be defined
+as:
+
+    KL_TF =
+        (1/T) sum_{t=1}^T
+        D_KL(
+            p_base(. | c, y_<t)
+            ||
+            p_patch(. | c, y_<t)
+        ).
+
+For sequence loss, define
+
+    loss_delta =
+        L_patch(y_1:T | c) - L_base(y_1:T | c).
+
+For token-level localization:
+
+    delta_t =
+        L_patch,t - L_base,t.
+
+Interpretation:
+
+    loss_delta > 0:
+        ablation makes the observed text harder to predict.
+
+    loss_delta < 0:
+        ablation makes the observed text easier to predict.
+
+    large KL_last or large final-token logit L2:
+        the feature changes the downstream token distribution.
+
+    large positive delta_t localized to semantically relevant spans:
+        stronger evidence that the feature participates in the hypothesized
+        response-framing regime rather than causing arbitrary degradation.
+
+11. Current strongest Qwen downstream candidate
+
+Layer 28 / feature 41435:
+
+    mediated_effect = 77.897545
+    loss_delta = +1.342655
+    final-token logit L2 = 574.866821
+    KL(base || patched) = 0.700875
+
+Second strong feature:
+
+Layer 24 / feature 47391:
+
+    mediated_effect = 30.897112
+    loss_delta = +0.140961
+    final-token logit L2 = 528.348450
+    KL(base || patched) = 0.529381
+
+12. Optional future localization ratio
+
+The current token-level run reports ranked token_loss_delta rows. If spans are
+manually or automatically annotated, a future localization ratio can be defined
+as:
+
+    R_loc =
+        sum_{t in S_target} max(delta_t, 0)
+        /
+        ( sum_t max(delta_t, 0) + epsilon ).
+
+This metric should be treated as proposed future summarization unless it is
+explicitly computed from annotated spans.
+
+13. Clean empirical chain
+
+The supported chain is:
+
+    coherent context
+        -> residual-stream geometry shift
+        -> projection coordinates on target/control axes
+        -> component causal trajectory movement
+        -> candidate SAE carrier activation
+        -> residual mediation
+        -> loss/logit/token-localized downstream effects.
+
+The clean claim is:
+
+    Coherent target context induces a measurable inference-time hidden-state
+    geometry shift. This shift is separable from lexical/content overlap through
+    sentence-shuffle and word-shuffle controls, and selected SAE decoder
+    directions provide candidate sparse carriers for response-framing dynamics
+    under the tested prompt regimes.

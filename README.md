@@ -55,8 +55,10 @@ context -> hidden-state geometry -> semantic readout -> persistence -> behavior
 - `metric_analyzer.py` - локальный помощник для анализа результатов прогонов.
 - `latent_space_shift_research_draft.md` - основной оформленный черновик
   исследования.
-- `research_context_anchor.md` - рабочая память исследования: текущие выводы,
-  гипотезы, сравнения моделей и следующие шаги.
+- `research_context_current.md` - компактная рабочая память исследования:
+  текущие выводы, гипотезы, сравнения моделей и следующие шаги.
+- `archive/research_context_anchor.md` - исторический архив старой длинной
+  рабочей памяти.
 - `latent_shift_research_notes.md` и `latent_shift_notes_for_me.txt` -
   дополнительные заметки.
 - `input_texts.json` - сохраненный набор экспериментальных текстов.
