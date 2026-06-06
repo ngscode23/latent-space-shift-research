@@ -44,6 +44,21 @@ This analyzer reads evidence and reorganizes it.
 It must not mutate the source package.
 ```
 
+Current Gemma Grade4 handoff:
+
+```text
+Input:
+  experiments/grade4_axis_decomposition_gemma/metrics/gemma_full/*.zip
+
+Typical output:
+  experiments/grade4_axis_decomposition_gemma/metrics/gemma3_12b_it_gate3_analysis/
+```
+
+This analyzer is a post-hoc metric lab. It does not run Gemma/Qwen, does not
+capture hidden states, and does not create the original Grade4 source
+artifacts. It only reads an existing result package and writes derived summaries,
+plots, inventories, and anomaly/confound tables.
+
 ## Inputs
 
 Accepted input:

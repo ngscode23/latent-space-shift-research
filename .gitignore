@@ -13,8 +13,8 @@ steering_outputs.json
 steering_outputs.csv
 attractor_results*/
 analysis_outputs/
-content/
-metrics/
+/content/
+/metrics/
 
 # Model/checkpoint/cache artifacts
 *.pt
@@ -35,7 +35,11 @@ venv/
 9
 
 # Private / sensitive research worktrees
-steering/
+/steering/
+/archive/
+/reports/
+/research_synthesis/
+/research_context_current.md
 model_workspaces/qwen3_5_9b_qwen_scope/steering/
 
 # Full metric packages / raw extracted result archives
@@ -44,6 +48,12 @@ grade4_axis_decomposition/metrics/*
 !grade4_axis_decomposition/metrics/README.md
 research_synthesis/gemma3_grade4_sae_academic_readout/metrics/*
 !research_synthesis/gemma3_grade4_sae_academic_readout/metrics/README.md
+
+# Experiments review package: keep metric indexes in Git, publish large/raw
+# metric payloads separately through Drive/Zenodo.
+experiments/**/metrics/**
+!experiments/**/metrics/
+!experiments/**/metrics/README.md
 
 # Extracted paper text / local scratch research source dumps
 research_synthesis/pdf_extracted_text/
