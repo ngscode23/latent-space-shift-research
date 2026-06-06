@@ -1,0 +1,30 @@
+# Clean review branch ignore rules
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# Root-level Colab/runtime outputs only.
+/content/
+/metrics/
+/runs/
+
+# Heavy metric/model payloads are shared separately, not committed here.
+*.zip
+*.csv
+*.npz
+*.npy
+*.pt
+*.pth
+*.parquet
+*.pkl
+*.bin
+*.safetensors
+*.7z
+*.rar
+
+# Local editor/OS files
+.vscode/
+.idea/
+Thumbs.db

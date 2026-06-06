@@ -1,0 +1,119 @@
+{
+  "run_identity": {
+    "script_family": "grade4_axis_decomposition",
+    "model_id": "Qwen/Qwen3-14B",
+    "run_label": "breakthrough_grade4_axis_decomposition",
+    "results_dir": "red_team_hidden_geometry_results_breakthrough_grade4_axis_decomposition",
+    "source_zip_path": "metrics\\qwen3_14b_breakthrough_grade_hardened\\red_team_hidden_geometry_results_breakthrough_grade4_axis_decomposition02.zip",
+    "source_zip_sha256": "89A96D28C74F247CC072FC0267841E4A5D91740873441235CF9C503B6089FE7B",
+    "question_count": 15,
+    "reference_condition": "neutral",
+    "condition_names": [
+      "question_only",
+      "neutral",
+      "target_word_shuffle_control",
+      "target_sentence_shuffle_control",
+      "neutral_length_matched_control",
+      "target"
+    ],
+    "grade4_component_causal_axes": [
+      "x_full",
+      "x_content",
+      "x_order",
+      "x_order_orth"
+    ],
+    "grade4_component_causal_layer_bands": [
+      "middle",
+      "late",
+      "all"
+    ],
+    "grade4_component_causal_alpha_values": [
+      0.1,
+      0.25,
+      0.5,
+      0.75
+    ],
+    "grade4_component_causal_generation_batch_size": 16
+  },
+  "verdict": {
+    "conservative_claim": "order_component_supported",
+    "plain_language": "Vector X contains a separable discourse-order/rhetorical-regime component beyond sentence-shuffled content.",
+    "boundary": "This does not prove permanent topology change or reviewer-grade visible behavioral control."
+  },
+  "axis_norms_middle": {
+    "full_norm": 122.15068978775764,
+    "content_norm": 135.71857371045425,
+    "order_norm": 71.96170721076244,
+    "order_orth_norm": 64.37653972673198,
+    "content_energy_fraction_of_full": 1.2344875838493503,
+    "order_energy_fraction_of_full": 0.3470651991080504,
+    "order_orth_energy_fraction_of_full": 0.2777559757286033,
+    "cos_content_order": -0.4442325182123066,
+    "cos_content_order_orth": 4.985879547710641e-10,
+    "cos_order_orth_full": 0.5270255986320427
+  },
+  "geometry_middle_projection": {
+    "target_x_full": 0.9765827666487742,
+    "target_x_content": 0.7247369330067737,
+    "target_x_order": 0.2415982629373748,
+    "target_x_order_orth": 0.978944456711214,
+    "sentence_shuffle_x_content": 0.9739139540219358,
+    "sentence_shuffle_x_order_orth": 0.0072137256947917,
+    "word_shuffle_x_order_orth": 0.2518492935160943,
+    "neutral_length_matched_x_order_orth": -0.0528669198014633,
+    "target_x_order_orth_direction_cosine": 0.4978333445753495,
+    "sentence_shuffle_x_order_orth_direction_cosine": 0.0028175004329115
+  },
+  "causal_middle_middle_alpha_0_75_gap": {
+    "neutral_x_full": 3.308553032070217,
+    "neutral_x_content": 2.990294242922241,
+    "neutral_x_order": 3.3845384807063907,
+    "neutral_x_order_orth": 3.726561456167043,
+    "target_x_full": 3.3309931837961058,
+    "target_x_content": 2.9979798793816643,
+    "target_x_order": 3.3838403841662545,
+    "target_x_order_orth": 3.698789125483237
+  },
+  "causal_middle_middle_slopes": {
+    "neutral_x_full": 2.229508281777901,
+    "neutral_x_content": 2.021194659512472,
+    "neutral_x_order": 2.2503743385381365,
+    "neutral_x_order_orth": 2.45980001056902,
+    "target_x_full": 2.2339999469752345,
+    "target_x_content": 2.0289730496064795,
+    "target_x_order": 2.257763259432501,
+    "target_x_order_orth": 2.4634616397937794
+  },
+  "optional_all_intervention_middle_readout_alpha_0_75_gap": {
+    "neutral_x_full": 4.153453281594963,
+    "neutral_x_content": 3.662412143648304,
+    "neutral_x_order": 5.066051696822992,
+    "neutral_x_order_orth": 5.280896058405935,
+    "target_x_full": 4.17734512432047,
+    "target_x_content": 3.771659858118179,
+    "target_x_order": 5.155403879361282,
+    "target_x_order_orth": 5.294020031258222
+  },
+  "late_intervention_middle_readout_alpha_0_75_gap_neutral": {
+    "x_full": 0.0241097467570217,
+    "x_content": 0.0351579424076684,
+    "x_order": 0.0041928229073189,
+    "x_order_orth": 0.0125059347493183
+  },
+  "grade3_recheck": {
+    "target_middle_projection_mean": 0.9765827666487742,
+    "target_middle_direction_cosine_mean": 0.8523972004641697,
+    "random_same_norm_observed_target_projection_mean": 0.9765827666487742,
+    "random_same_norm_null_mean": 4.009175919216914e-05,
+    "random_same_norm_empirical_p": 0.0077519379844961
+  },
+  "primary_artifacts": [
+    "grade4_axis_component_norm_summary.csv",
+    "grade4_axis_projection_geometry_summary.csv",
+    "grade4_axis_component_causal_projection_summary.csv",
+    "grade4_axis_component_causal_symmetry_summary.csv",
+    "grade4_axis_component_causal_alpha_scaling_summary.csv",
+    "grade4_axis_component_causal_rank_summary.csv",
+    "grade4_axis_decomposition_verdict.md"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "run_identity": {
+    "script": "red_team_hidden_geometry_breakthrough_grade.py",
+    "script_path": "C:\\Users\\stasv\\OneDrive\\Рабочий стол\\agent\\red_team_hidden_geometry_breakthrough_grade.py",
+    "script_sha256": "E32388410BFBFEDDD07023EB10D2D8409842A45EF8077CDDD6E95AEFFBE89926",
+    "model_id": "Qwen/Qwen3-14B",
+    "run_label": "breakthrough_grade_hardened",
+    "results_dir": "red_team_hidden_geometry_results_breakthrough_grade",
+    "zip_path": "C:\\Users\\stasv\\Downloads\\red_team_hidden_geometry_results_breakthrough_grade3.zip",
+    "zip_sha256": "478BBA225DDC954CFAFAB0EE2A3BA1AB55DC3BF35CAFE99880979D5B3C196803",
+    "metric_report_path": "C:\\Users\\stasv\\Downloads\\breakthrough_grade3_metric_report.md",
+    "metric_report_sha256": "1AAC6C01548FE37DBC69D8DD0ACE7986C40B7CD38F8749A6D4DB9A7858B3A562",
+    "question_count": 15,
+    "target_text_tokens": 2721,
+    "neutral_text_tokens": 3017,
+    "reference_condition": "neutral",
+    "max_input_tokens": 8192,
+    "max_new_tokens": 256,
+    "causal_layer_bands": ["middle", "late"],
+    "behavioral_train_questions": 9,
+    "behavioral_test_questions": 6,
+    "behavioral_random_baselines": 48
+  },
+  "verdict": {
+    "supported": [
+      "robust target-conditioned hidden geometry shift",
+      "Vector X specificity against length, shuffle, FDR, and random-vector controls",
+      "middle-layer residual-stream causal steering of internal generation trajectory",
+      "architecture-level activation alignment"
+    ],
+    "not_yet_supported": [
+      "reviewer-grade visible behavioral steering",
+      "permanent weight-level or topology-level change",
+      "cross-model replication from this single archive",
+      "SAE-level feature localization",
+      "optional global all-layer localization comparison"
+    ],
+    "conservative_claim": "causal_internal_axis_supported"
+  },
+  "geometry": {
+    "target_middle_projection_mean": 0.9765827666,
+    "target_middle_projection_ci95_low": 0.9604511325,
+    "target_middle_projection_ci95_high": 0.9920084907,
+    "target_middle_direction_cosine_mean": 0.8523972005,
+    "target_middle_positive_projection_fraction": 1.0,
+    "middle_band_r2": 0.7441264785,
+    "target_over_neutral_length_matched_projection_lift": 0.973834,
+    "target_over_word_shuffle_projection_lift": 0.321837,
+    "target_over_sentence_shuffle_projection_lift": 0.111415,
+    "word_shuffle_projection_mean": 0.6547453927,
+    "sentence_shuffle_projection_mean": 0.8651679445,
+    "neutral_length_matched_projection_mean": 0.0027490538
+  },
+  "null_baseline": {
+    "random_same_norm_observed_target_projection_mean": 0.9765827666,
+    "random_same_norm_null_mean": 0.0000400918,
+    "random_same_norm_null_std": 0.0011220983,
+    "observed_minus_null_mean": 0.9765426749,
+    "empirical_p_greater_equal_observed": 0.007751938,
+    "null_count": 128
+  },
+  "causal_internal": {
+    "middle_plus_internal_alpha_slope": 2.3185340157,
+    "middle_minus_internal_suppression_alpha_slope": 2.1855812374,
+    "middle_dose_response_monotonicity": 1.0,
+    "neutral_middle_plus_minus_gap_alpha_0_10": 0.441223,
+    "neutral_middle_plus_minus_gap_alpha_0_25": 1.150607,
+    "neutral_middle_plus_minus_gap_alpha_0_50": 2.267656,
+    "neutral_middle_plus_minus_gap_alpha_0_75": 3.313378,
+    "target_middle_plus_minus_gap_alpha_0_10": 0.468811,
+    "target_middle_plus_minus_gap_alpha_0_25": 1.141333,
+    "target_middle_plus_minus_gap_alpha_0_50": 2.251842,
+    "target_middle_plus_minus_gap_alpha_0_75": 3.336544,
+    "late_plus_internal_pass_dose_response": false
+  },
+  "generation_readout": {
+    "neutral_generation_middle_projection_mean": 0.1288235419,
+    "target_generation_middle_projection_mean": 0.2925949,
+    "target_word_shuffle_generation_middle_projection_mean": 0.2666624177,
+    "target_response_projection_on_vector_x_mean": 0.0452294068,
+    "target_word_shuffle_response_projection_on_vector_x_mean": 0.0499177815
+  },
+  "behavioral_control": {
+    "verdict": "internal_axis_supported_behavioral_control_not_supported",
+    "best_neutral_plus_x_likeness_alpha_0_75": 0.5575385362,
+    "random_plus_likeness": 0.5324239181,
+    "plus_x_lift_over_random_mean": 0.0251146181,
+    "plus_x_lift_over_random_p95_alpha_0_75": -0.0896688302,
+    "win_rate_vs_random_p95": 0.0,
+    "middle_alpha_0_75_internal_visible_pearson_r": 0.1064279446,
+    "internal_visible_coupling_pass": false
+  },
+  "next_experiment": {
+    "causal_layer_bands": ["middle", "late"],
+    "optional_causal_layer_bands": ["all"],
+    "recommended_random_baselines": "96-128",
+    "recommended_heldout_questions": ">=20",
+    "axis_decomposition": ["X_content = sentence_shuffle - neutral", "X_order = target - sentence_shuffle", "X_full = target - neutral"]
+  }
+}
