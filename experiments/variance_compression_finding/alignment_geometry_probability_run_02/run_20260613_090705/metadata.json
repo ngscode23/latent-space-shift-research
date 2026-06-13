@@ -1,0 +1,15 @@
+{
+  "base_model": "google/gemma-3-12b-pt",
+  "instruct_model": "google/gemma-3-12b-it",
+  "prompt_mode": "raw",
+  "include_shuffles": true,
+  "n_target_contexts": 1,
+  "n_control_contexts": 1,
+  "n_questions": 10,
+  "n_prompts": 50,
+  "batch_size": 2,
+  "max_length": null,
+  "dtype": "torch.bfloat16",
+  "device": "cuda",
+  "torch_version": "2.12.0.dev20260408+cu128"
+}

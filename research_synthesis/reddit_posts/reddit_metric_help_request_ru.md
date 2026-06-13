@@ -1,51 +1,248 @@
-# Reddit Post EN: help interpreting latent-shift metrics
+# Reddit Post EN: help interpreting context-induced hidden-state shift metrics
 
 ## Title
 
 ```text
-Help interpreting metrics: a strong target text appears to induce a measurable latent-state shift in Gemma 3 12B IT
+Feedback wanted: context-induced hidden-state geometry shifts in Gemma/Qwen
 ```
 
 ## Post
 
 ```text
-Hi. I am working on a small LLM interpretability / hidden-state geometry project, and I need help from people who understand residual-stream geometry, latent representations, SAE readouts, PCA/state-space metrics, generation trajectories, and AI safety.
+Hi everyone,
 
-The question I am studying is not whether text changes the final output of a model. That is obvious. The question is whether a strong target text can change the model's internal state before the final answer: in other words, whether it can move the model's hidden states into a different measurable region of latent space during inference, without changing the model weights.
+I am working on a mechanistic interpretability / hidden-state geometry project,
+and I would like technical criticism from people who work with residual-stream
+geometry, activation analysis, causal interventions, PCA/state-space readouts,
+generation trajectories, and SAE-based interpretability.
 
-In the current run on Gemma 3 12B IT, I observed what I currently interpret as evidence for a context-induced latent-state shift.
+The question is not whether text can change a model's final output. That is
+obvious. The question is whether a strong coherent context can move a model
+into a different measurable inference-time hidden-state / residual-stream
+region before the final answer is produced, without changing model weights.
 
-The experiment compares several conditions: a question-only condition, a neutral control, a coherent target text, a word-shuffled version of the target text, and a sentence-shuffled version of the target text. The basic control logic is simple. If the effect is only caused by similar words, similar sentences, length, or semantic content overlap, then the coherent target text and the shuffled controls should look similar in hidden-state geometry. If the coherent target text creates a different processing mode, then its hidden states should separate into a different component of the internal state space.
+The control structure compares:
 
-That is what the current metrics seem to show. The sentence-shuffled control loads strongly onto a content-like component, which looks like the trace of similar content. The coherent target text barely loads onto that content-like component and instead loads strongly onto a separate structure / response-mode component. This is the main reason I do not think the result can be reduced to lexical overlap, shared words, text length, or ordinary semantic similarity.
+- question-only / baseline conditions;
+- neutral or reference context;
+- coherent target context;
+- sentence-shuffled target context;
+- word-shuffled target context.
 
-Put simply: the model did not just see similar words. The coherent target text appears to move the model into a different measurable internal configuration.
+The goal is to separate lexical/content overlap from coherent discourse/order
+structure. If the effect is only caused by shared words, length, or ordinary
+semantic content, then the coherent target and the shuffled controls should
+look similar in hidden-state geometry. If coherent discourse order induces a
+different internal response mode, then the coherent target should separate from
+the shuffled controls along a different latent coordinate.
 
-The shift is not visible in only one table. It appears in layerwise hidden-state geometry, target/control comparisons, component decomposition, generation-trajectory metrics, and partially in SAE sparse-feature readouts. The SAE reconstruction quality is high enough that the sparse-feature readout does not look like arbitrary noise, but I still want help interpreting which SAE features are actually meaningful and which ones are just surface correlates.
+The current readout constructs layerwise target/control axes:
 
-My current claim is:
+- x_full: target minus reference;
+- x_content: sentence-shuffle minus reference;
+- x_order: target minus sentence-shuffle;
+- x_order_orth: x_order with the sentence-shuffle/content component removed
+  layer by layer.
 
-Strong target text can induce a measurable context-induced latent-state shift in Gemma 3 12B IT. This shift appears before the final answer, is separable from shuffled-content controls, appears in hidden-state geometry, partially persists into generation, and has a partial SAE sparse-feature readout.
+The reported values are projection coordinates, not absolute latent-space
+positions. They measure how much of a discovered target/control direction is
+present in a condition delta or generated trajectory.
 
-The AI safety reason this matters is that the final output may be a late readout of an internal state transition. If that is true, then output-only safety evaluation can be looking too late. In future agentic LLM systems, the relevant risk may not live only in the final text response. It may live in the hidden trajectory: intermediate planning states, tool-use decisions, self-monitoring states, policy-relevant internal modes, or other latent configurations that happen before the final answer is produced. If strong context can shift a model into a different latent state before generation, then safety work should look at hidden-state transitions and generation trajectories, not only the last visible message.
+Current runs:
 
-I am attaching the metrics as CSV/PDF/zip. The files include hidden-state geometry, target/control comparisons, layerwise summaries, component decomposition, generation trajectory, SAE reconstruction quality, SAE feature contrast, and analyzer outputs.
+- Gemma3-12B-IT;
+- Qwen3.5-9B-Base with Qwen-Scope SAE.
 
-What I need is a hard critique of the metrics and interpretation. Are these metrics strong enough for the claim "context-induced latent-state shift"? Am I interpreting the separation between coherent target text and shuffled-content controls correctly? Which controls are still missing if I want to rule out length, rhetorical intensity, content similarity, or prompt artifacts? Which SAE features should I inspect manually, for example through Neuronpedia or direct activation examples? What would be the right next causal experiment: ablation, activation patching, or steering along the discovered component axis?
+The central descriptive result is that coherent target context strongly
+projects onto the coherent-order residual coordinate, while sentence-shuffled
+controls preserve much of the content coordinate but largely lose that
+coherent-order coordinate.
 
-I am not asking people to agree with the hypothesis. I want to know what the metrics actually prove, what they do not prove, and what experiment would make the result convincing to a mechanistic interpretability / AI safety audience.
+Gemma3-12B-IT:
+
+target:
+  x_full       = 0.936508
+  x_order_orth = 0.909026
+
+sentence shuffle:
+  x_content    = 0.849551
+  x_order_orth = -0.069058
+
+Qwen3.5-9B-Base:
+
+target:
+  x_full       = 0.973778
+  x_content    = 0.770266
+  x_order_orth = 0.979462
+
+sentence shuffle:
+  x_content    = 0.967008
+  x_order_orth = 0.009969
+
+word shuffle:
+  x_content    = 0.594366
+  x_order_orth = 0.059662
+
+This is the main result I want stress-tested: sentence-shuffled controls can
+preserve content coordinates while failing to reproduce the coherent-order
+residual coordinate of the original target. My current interpretation is that
+the model did not merely see similar words; the coherent target appears to move
+the residual stream into a different measurable internal configuration.
+
+I also ran component-level causal interventions by injecting positive and
+negative versions of discovered directions during generation and reading out
+plus/minus trajectory gaps.
+
+Qwen3.5-9B-Base:
+
+all readout cells:
+  x_content mean plus/minus gap     = 41.878616
+  x_order_orth mean plus/minus gap  = 38.246761
+  positive gap rate                 = 1.0 for both
+
+matching readouts:
+  x_content mean gap                = 73.851162
+  x_order_orth mean gap             = 72.449630
+
+Gemma3-12B-IT:
+
+all readout cells:
+  x_content mean plus/minus gap     = 27352.919286
+  x_order_orth mean plus/minus gap  = 19284.481823
+
+matching readouts:
+  x_content mean gap                = 37883.852822
+  x_order_orth mean gap             = 34227.185962
+
+So my causal claim is deliberately narrow: the coherent-order component is
+descriptively separable and causally involved in trajectory movement, but I am
+not claiming that it is the dominant steering axis over the content component.
+
+I then connected the dense geometry to SAE diagnostics. For Qwen3.5-9B-Base /
+Qwen-Scope SAE:
+
+SAE reconstruction cosine mean       = 0.966660
+explained-variance proxy mean        = 0.933639
+SAE specs computed                   = 32 / 32
+hidden size                          = 4096
+SAE width                            = 65536
+TopK                                 = 50
+
+Candidate features were tested with SAE-delta patching:
+
+  h_patched = h + SAE_decode(a_patched) - SAE_decode(a_original)
+
+So the ablation does not replace the residual stream with a full SAE
+reconstruction. It only adds the decoded feature delta.
+
+The strongest current Qwen downstream candidate is:
+
+layer 28 / feature 41435:
+  mediated_effect          = 77.897545
+  sequence loss_delta      = +1.342655
+  final-token logit L2     = 574.866821
+  KL(base || patched)      = 0.700875
+
+Second candidate:
+
+layer 24 / feature 47391:
+  mediated_effect          = 30.897112
+  sequence loss_delta      = +0.140961
+  final-token logit L2     = 528.348450
+  KL(base || patched)      = 0.529381
+
+Token-level loss localization places large patch-worse deltas around spans
+that look related to averaged-recipient framing, safety/default framing,
+caution as a default response mode, objection avoidance, and directness /
+precision tradeoffs. I am treating these as candidate sparse carriers for a
+formulation or epistemic-posture regime, not as final universal feature names.
+
+The AI safety angle is that output-only evaluation may be late. If an agent's
+hidden trajectory shifts before planning, tool selection, self-monitoring, or
+memory writes, final-answer evaluation may observe the symptom after the
+decision state has already happened. For a chat model this is an
+interpretability result; for agentic systems it may become a safety-relevant
+object.
+
+What I want is a hard critique, not agreement. In particular:
+
+1. Does this target / reference / sentence-shuffle / word-shuffle decomposition
+   make sense as a control structure for separating content overlap from
+   coherent discourse/order structure?
+
+2. Is projection_fraction(delta, axis) = dot(delta, axis) / dot(axis, axis) a
+   reasonable coordinate readout here, or should the geometry be framed
+   differently?
+
+3. What controls are still missing to rule out length, rhetorical intensity,
+   prompt artifacts, position effects, or ordinary semantic similarity?
+
+4. What are the most likely failure modes in constructing x_order_orth by
+   removing the sentence-shuffle/content component layerwise?
+
+5. For causal interventions, what would be the cleanest dose-response /
+   sign-symmetry test?
+
+6. For the SAE feature readout, what negative controls would you require?
+   Random features? content-heavy features? same-layer matched-norm features?
+   features with similar activation frequency?
+
+7. What would make this evidence convincing to a mechanistic interpretability
+   audience: activation patching, ablation, steering, held-out prompt transfer,
+   lexical-set logit probes, more model families, or something else?
+
+Current claim boundary:
+
+I am claiming that coherent target context can induce a measurable
+inference-time hidden-state / residual-stream geometry shift; that this shift
+can be read as projection coordinates relative to target/control-derived axes;
+that sentence-shuffled controls preserve content signal while largely losing
+the coherent-order residual coordinate; and that component interventions and
+SAE mini-checks provide partial causal and sparse-carrier evidence.
+
+I am not claiming permanent weight change, universal behavior control, a
+complete theory of refusal/safety behavior, or proof that any single SAE
+feature has a final universal semantic label.
+
+If anyone is interested, I can share the technical note, scripts, CSV summaries,
+PDFs, and metric artifacts. I am mainly looking for hard criticism of the
+evidence structure and suggestions for stronger controls.
 ```
 
 ## Short Version
 
 ```text
-Hi. I am studying whether a strong target text can shift an LLM into a different measurable internal state before the final answer.
+I am looking for hard technical criticism of a hidden-state geometry result.
 
-In a Gemma 3 12B IT run, the coherent target text separates from word-shuffle and sentence-shuffle controls in hidden-state geometry. The sentence-shuffled control loads strongly onto a content-like component, while the coherent target text loads onto a separate structure / response-mode component. The shift also appears in layerwise geometry, component decomposition, generation-trajectory metrics, and partially in SAE sparse-feature readouts.
+Question: can a strong coherent context move an LLM into a different measurable
+inference-time residual-stream state before the final answer, without changing
+weights?
 
-My current claim is that strong target text can induce a measurable context-induced latent-state shift during inference, without changing the model weights.
+I compare target, reference, sentence-shuffled target, and word-shuffled target
+conditions. The key readout constructs target/control axes and measures
+projection coordinates. In Gemma3-12B-IT and Qwen3.5-9B-Base, the coherent
+target strongly projects onto a coherent-order residual coordinate, while the
+sentence-shuffled control preserves content signal but mostly loses that
+coordinate.
 
-I am attaching CSV/PDF/zip metrics and need help interpreting them. I want a hard critique: what is strong evidence, what is weak, what controls are missing, which SAE features should be inspected manually, and what causal experiment would test whether the discovered component actually affects generation behavior.
+Gemma:
+target x_order_orth = 0.909026
+sentence_shuffle x_content = 0.849551
+sentence_shuffle x_order_orth = -0.069058
 
-The AI safety angle is that final output may be a late readout of an internal state transition. If so, output-only safety evaluation may be looking too late, especially for future agentic LLM systems.
+Qwen:
+target x_order_orth = 0.979462
+sentence_shuffle x_content = 0.967008
+sentence_shuffle x_order_orth = 0.009969
+
+Component interventions show causal involvement of both content and
+coherent-order directions, without proving coherent-order dominance.
+Qwen-Scope SAE mini-checks identify candidate sparse carriers; the strongest
+current feature is layer 28 / feature 41435, with mediated_effect = 77.897545,
+loss_delta = +1.342655, final-token logit L2 = 574.866821, and KL(base ||
+patched) = 0.700875 under ablation.
+
+I want critique on whether this control structure and projection-coordinate
+readout are valid, what controls are missing, what SAE negative controls are
+needed, and what causal experiment would make the result convincing.
 ```

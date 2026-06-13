@@ -33,6 +33,9 @@ venv/
 
 # Accidental scratch files
 9
+/test.txt
+/promt_opus4_8.md
+/research_post_for_collaborators.txt
 
 # Private / sensitive research worktrees
 /steering/
@@ -54,6 +57,22 @@ research_synthesis/gemma3_grade4_sae_academic_readout/metrics/*
 experiments/**/metrics/**
 !experiments/**/metrics/
 !experiments/**/metrics/README.md
+
+# Fullbank metric packet: keep short indexes/findings in Git, keep the raw
+# extracted Colab payload out of Git because it contains large files and very
+# deep Windows paths.
+experiments/variance_compression_finding/alignment_geometry_probability_run_02/metric/_20260613_113703_alignment_geometry_probability_run_fullbank_/content/
+
+# Variance-compression research metrics are intentionally committed when they
+# are compact CSV/JSON/Markdown summaries. Keep raw hidden states and full prompt
+# dumps out of Git.
+!experiments/variance_compression_finding/**/*.csv
+!experiments/variance_compression_finding/**/*.json
+!experiments/variance_compression_finding/**/*.md
+experiments/variance_compression_finding/**/*.npz
+experiments/variance_compression_finding/**/prompts.csv
+experiments/variance_compression_finding/**/logit_metrics_by_prompt*.csv
+experiments/variance_compression_finding/alignment_geometry_probability_run_02/metric/_20260613_113703_alignment_geometry_probability_run_fullbank_/content/
 
 # Extracted paper text / local scratch research source dumps
 research_synthesis/pdf_extracted_text/

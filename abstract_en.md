@@ -97,15 +97,48 @@ The between-condition to within-condition variance ratio falls from 3.16 at laye
 6 to 0.50 by layer 47, so the compression is a late-network phenomenon that
 emerges from roughly layer 30 and intensifies toward the logits. Two independent
 and norm-invariant metrics therefore agree that the induced regime is not merely
-a displaced coordinate but a lower-dimensional attractor: the target context
-collapses otherwise question-dependent representations into a narrower late-layer
-region. The shuffle gradient indicates that this compression is driven primarily
+a displaced coordinate but a more compressed, lower-dimensional one: under the
+target context the otherwise question-dependent representations occupy a
+narrower late-layer region. The shuffle gradient indicates that this compression is driven primarily
 by target content with a smaller coherent-order contribution, consistent with
 the content/order weighting reported above. As with the rest of the descriptive
-geometry this is an inference-time, context-present effect; attributing the
-compression specifically to alignment-time weight changes would require a
-base-versus-instruct comparison on identical inputs, which is not part of the
-current evidence.
+geometry this is an inference-time, context-present measurement; whether
+alignment-time weight changes are responsible is addressed directly by a
+base-versus-instruct comparison.
+
+That comparison runs the base pretrained model gemma-3-12b-pt and the
+instruction-tuned gemma-3-12b-it on identical raw inputs (no chat template,
+because the base model has none) over five matched conditions (coherent target,
+neutral, word- and sentence-shuffled target, bare questions) and ten held-out
+analytic questions distinct from the natscale set. The naive form of the
+weight-level hypothesis — that alignment training globally suppresses
+hidden-state dispersion — is rejected by this data: in the late band (layers 30
+to 47) the instruction-tuned model is more dispersed than the base model under
+every condition, by 18 to 30 percent under the context conditions and by 133
+percent for bare questions (0.063 base versus 0.147 instruct). What alignment
+changes is the organization of that variance, in three ways. First, the late
+state becomes sharply context-governed: adding a shared context passage reduces
+relative within-dispersion by about 2 percent in the base model but by about 48
+percent in the instruction-tuned model, so the context-induced compression that
+defines the regime effect is amplified by more than an order of magnitude at
+alignment time. Second, alignment compresses the effective dimensionality of
+context-conditioned states: late-band effective rank falls from 6.27 to 4.50
+for the target condition (a 28 percent reduction), with smaller reductions for
+the shuffle controls and bare questions, while the neutral condition is left
+essentially unchanged (3.84 versus 3.77). Third, the target-versus-neutral
+compression gap itself is already present in the base model (about 13 percent
+in this raw-prompt setting, versus about 4 percent for the instruction-tuned
+model in the same template-free format), so target-content-induced compression
+is a pretraining-era phenomenon that alignment reorganizes and re-weights
+rather than creates; how that gap behaves under the deployment chat format is
+exactly what the template-controlled repeat below is for. This comparison has stated limits: it uses no chat template,
+which places the instruction-tuned model outside its deployment format and may
+inflate its bare-question dispersion; it uses a different question set than the
+natscale measurement; and it is a single run with ten questions per condition.
+The weight-level statement supported by the current evidence is therefore not
+that alignment suppresses variance, but that alignment makes the late hidden
+state strongly context-governed and lower-rank under coherent context while
+leaving neutral-context geometry largely untouched.
 
 The second line of evidence is generation-trajectory readout. A prompt-endpoint
 shift alone could be a static context signature. The generation readout asks
@@ -257,7 +290,7 @@ The compact empirical chain is:
 
     target discourse coherence
         -> residual-stream coordinate shift
-        -> compression into a lower-dimensional late-layer attractor
+        -> compression into a lower-dimensional late-layer region
         -> coherent-order component separation from content controls
         -> generation-trajectory movement
         -> component-level causal involvement
@@ -280,20 +313,24 @@ before acting?"
 
 The current evidence supports context-induced latent-state shift,
 content/order separation through shuffle controls, generation-trajectory
-readout, causal involvement of component directions, and sparse candidate
-carriers with downstream loss/logit effects. It does not establish permanent
-model change, a universal model-independent mechanism, dominance of the
-coherent-order component over the content component in all causal settings, or
-that the observed late-layer compression originates from alignment-time weight
-changes rather than from in-context dynamics. The
+readout, causal involvement of component directions, sparse candidate
+carriers with downstream loss/logit effects, and a base-versus-instruct
+dispersion contrast showing that alignment amplifies context-governed
+compression and lowers the effective rank of context-conditioned late states
+while the compression phenomenon itself predates alignment. It does not
+establish permanent model change, a universal model-independent mechanism,
+dominance of the coherent-order component over the content component in all
+causal settings, or that the base-versus-instruct contrasts survive a
+chat-template-controlled repeat, the original natscale question set, and
+replication on other model families. The
 next step is to convert local evidence into a stronger transfer claim through
 held-out prompts without the source target text, neutral matched controls,
 monotonic scale sweeps, negative-control features, lexical-set logit probes,
 feature-composition interactions, search for an opposite direct-answer /
-concrete-user direction, a base-versus-instruct dispersion comparison to test
-whether the late-layer compression originates at alignment time, replication of
-the dispersion and effective-rank measurement on Qwen, and replication on
-additional model families. If
+concrete-user direction, a chat-template-controlled repeat of the
+base-versus-instruct dispersion comparison using the original natscale
+questions, replication of the dispersion and effective-rank measurement on
+Qwen, and replication on additional model families. If
 these checks hold, hidden-state trajectory monitoring becomes a practical
 alignment object: alignment should ask not only whether the final response is
 acceptable, but also whether the model entered a policy-relevant, unstable,

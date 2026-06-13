@@ -1,0 +1,19 @@
+{
+  "run_dir": "experiments\\variance_compression_finding\\alignment_geometry_probability_run_02\\run_20260613_090705",
+  "out_dir": "experiments\\variance_compression_finding\\alignment_geometry_probability_run_02\\run_20260613_090705\\hidden_npz_deep_dive",
+  "late_lo": 30,
+  "late_hi": 47,
+  "n_prompts": 50,
+  "hidden_shape": [
+    50,
+    49,
+    3840
+  ],
+  "condition_counts": {
+    "target": 10,
+    "target_word_shuffle": 10,
+    "target_sentence_shuffle": 10,
+    "control": 10,
+    "question_only": 10
+  }
+}

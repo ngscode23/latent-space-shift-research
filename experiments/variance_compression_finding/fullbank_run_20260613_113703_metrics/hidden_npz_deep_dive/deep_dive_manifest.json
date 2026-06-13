@@ -1,0 +1,19 @@
+{
+  "run_dir": "C:\\Users\\stasv\\Downloads\\_20260613_113703_alignment_geometry_probability_run_fullbank_\\content\\alignment_geometry_probability_run_fullbank\\run_20260613_113703",
+  "out_dir": "C:\\Users\\stasv\\Downloads\\_20260613_113703_alignment_geometry_probability_run_fullbank_\\content\\alignment_geometry_probability_run_fullbank\\run_20260613_113703\\hidden_npz_deep_dive",
+  "late_lo": 30,
+  "late_hi": 47,
+  "n_prompts": 410,
+  "hidden_shape": [
+    410,
+    49,
+    3840
+  ],
+  "condition_counts": {
+    "target": 100,
+    "target_word_shuffle": 100,
+    "target_sentence_shuffle": 100,
+    "control": 100,
+    "question_only": 10
+  }
+}

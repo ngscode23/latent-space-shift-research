@@ -181,7 +181,7 @@ def set_reproducible_seed(seed):
 
 def make_seed(task_id, real_layer, feature_index, sample_id, generation_mode):
     # seed НЕ зависит от scale: так scale-сравнение чище.
-    mode_offset = 0 if generation_mode == "greedy" else 100000
+    mode_offset = 0 if generation_mode == "c" else 100000
     return (
         RANDOM_SEED_BASE
         + int(task_id) * 1000

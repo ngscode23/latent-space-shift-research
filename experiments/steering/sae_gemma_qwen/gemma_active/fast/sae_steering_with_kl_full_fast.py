@@ -255,6 +255,44 @@ def sentence_count(text):
     return len(parts)
 
 
+def script_profile(text):
+    text = "" if text is None else str(text)
+    cyr_count = len(re.findall(r"[А-Яа-яЁё]", text))
+    lat_count = len(re.findall(r"[A-Za-z]", text))
+    letter_count = cyr_count + lat_count
+
+    if letter_count == 0:
+        return {
+            "output_letter_count": 0,
+            "output_cyrillic_letter_count": 0,
+            "output_latin_letter_count": 0,
+            "output_cyrillic_fraction": None,
+            "output_latin_fraction": None,
+            "output_dominant_script": "none",
+            "output_code_switch_flag": 0,
+        }
+
+    cyr_frac = cyr_count / letter_count
+    lat_frac = lat_count / letter_count
+    code_switch = int(min(cyr_frac, lat_frac) >= 0.15)
+    if code_switch:
+        dominant = "mixed"
+    elif cyr_frac >= lat_frac:
+        dominant = "cyrillic"
+    else:
+        dominant = "latin"
+
+    return {
+        "output_letter_count": int(letter_count),
+        "output_cyrillic_letter_count": int(cyr_count),
+        "output_latin_letter_count": int(lat_count),
+        "output_cyrillic_fraction": float(cyr_frac),
+        "output_latin_fraction": float(lat_frac),
+        "output_dominant_script": dominant,
+        "output_code_switch_flag": code_switch,
+    }
+
+
 def count_substrings(text, substrings):
     t = str(text).lower()
     return sum(t.count(s.lower()) for s in substrings)
@@ -307,6 +345,7 @@ def compute_text_metrics(output_text):
         "contains_limit": int(("предел" in output_text.lower()) or ("огранич" in output_text.lower())),
         "contains_softening": int(("смягч" in output_text.lower()) or ("уступ" in output_text.lower())),
         "contains_form": int("форм" in output_text.lower()),
+        **script_profile(output_text),
     }
 
 
@@ -842,6 +881,10 @@ baseline_keep_cols = baseline_cols + [
     "diagnostic_keyword_count",
     "contrastive_marker_count",
     "negation_marker_count",
+    "output_dominant_script",
+    "output_cyrillic_fraction",
+    "output_latin_fraction",
+    "output_code_switch_flag",
 ]
 
 baseline_df = baseline_df[baseline_keep_cols].rename(columns={
@@ -852,6 +895,10 @@ baseline_df = baseline_df[baseline_keep_cols].rename(columns={
     "diagnostic_keyword_count": "baseline_diagnostic_keyword_count",
     "contrastive_marker_count": "baseline_contrastive_marker_count",
     "negation_marker_count": "baseline_negation_marker_count",
+    "output_dominant_script": "baseline_output_dominant_script",
+    "output_cyrillic_fraction": "baseline_output_cyrillic_fraction",
+    "output_latin_fraction": "baseline_output_latin_fraction",
+    "output_code_switch_flag": "baseline_output_code_switch_flag",
 })
 
 steering_df = steering_df.merge(baseline_df, on=baseline_cols, how="left")
@@ -871,6 +918,21 @@ steering_df["delta_token_count_vs_scale0"] = steering_df["output_token_count"] -
 steering_df["delta_diagnostic_keywords_vs_scale0"] = steering_df["diagnostic_keyword_count"] - steering_df["baseline_diagnostic_keyword_count"]
 steering_df["delta_contrastive_markers_vs_scale0"] = steering_df["contrastive_marker_count"] - steering_df["baseline_contrastive_marker_count"]
 steering_df["delta_negation_markers_vs_scale0"] = steering_df["negation_marker_count"] - steering_df["baseline_negation_marker_count"]
+steering_df["script_switched_vs_scale0"] = (
+    steering_df["output_dominant_script"].fillna("none")
+    != steering_df["baseline_output_dominant_script"].fillna("none")
+).astype(int)
+steering_df.loc[
+    (steering_df["output_dominant_script"].fillna("none") == "none")
+    | (steering_df["baseline_output_dominant_script"].fillna("none") == "none"),
+    "script_switched_vs_scale0",
+] = 0
+steering_df["delta_cyrillic_fraction_vs_scale0"] = (
+    steering_df["output_cyrillic_fraction"] - steering_df["baseline_output_cyrillic_fraction"]
+)
+steering_df["delta_latin_fraction_vs_scale0"] = (
+    steering_df["output_latin_fraction"] - steering_df["baseline_output_latin_fraction"]
+)
 
 steering_df.to_csv(OUTPUT_CSV, index=False)
 
@@ -898,6 +960,10 @@ summary = steering_df.groupby(
     mean_delta_contrastive_markers_vs_scale0=("delta_contrastive_markers_vs_scale0", "mean"),
     mean_negation_marker_count=("negation_marker_count", "mean"),
     mean_delta_negation_markers_vs_scale0=("delta_negation_markers_vs_scale0", "mean"),
+    script_switch_rate_vs_scale0=("script_switched_vs_scale0", "mean"),
+    mean_output_cyrillic_fraction=("output_cyrillic_fraction", "mean"),
+    mean_output_latin_fraction=("output_latin_fraction", "mean"),
+    code_switch_rate=("output_code_switch_flag", "mean"),
     mean_final_next_token_kl=("final_next_token_kl_base_to_patched", "mean"),
     mean_final_next_token_js=("final_next_token_js_divergence", "mean"),
     mean_final_logit_l2=("final_logit_l2", "mean"),
